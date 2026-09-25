@@ -11,7 +11,8 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "probe:photos": "tsx --env-file-if-exists=.env.local scripts/make-probe-photos.ts",
-    "probe": "tsx --env-file-if-exists=.env.local scripts/probe.ts"
+    "probe": "tsx --env-file-if-exists=.env.local scripts/probe.ts",
+    "probe:real": "tsx scripts/fetch-real-photos.ts"
   },
   "dependencies": {
     "@google/genai": "^2.24.0",

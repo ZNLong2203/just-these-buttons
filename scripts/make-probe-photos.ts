@@ -75,6 +75,33 @@ const photos: PhotoSpec[] = [
       "OFF, 1, 2, 3, and a separate SWING button and a TIMER knob.",
   },
   {
+    file: "remote-dim.jpg",
+    prompt:
+      "An elderly person's wrinkled hand holding a silver TV remote in a dim living room at night, lit only by the " +
+      "TV's glow, slightly blurry. Buttons: a red POWER button, number keys 1-9 and 0, VOL + and VOL -, CH + and CH -, " +
+      "MUTE, INPUT, MENU, OK.",
+  },
+  {
+    file: "washer-glare.jpg",
+    prompt:
+      "A front-loading washing machine control panel photographed at a steep angle from the side, with a bright " +
+      "reflection from a window across part of the panel. Controls: an ON/OFF button, a programme dial labelled " +
+      "COTTON, EASY CARE, WOOL, HAND WASH, QUICK 30, RINSE, SPIN, and a START/PAUSE button.",
+  },
+  {
+    file: "air-fryer.jpg",
+    prompt:
+      "The top control panel of a black digital air fryer on a kitchen counter. Touch buttons with printed icons and " +
+      "words: POWER, FRIES, CHICKEN, FISH, STEAK, TEMP + and TEMP -, TIME + and TIME -, and a START/STOP button, around " +
+      "a small LED display showing 180°.",
+  },
+  {
+    file: "radio.jpg",
+    prompt:
+      "An old portable radio on a windowsill, with a large tuning dial marked FM and AM frequencies, a VOLUME knob, " +
+      "an OFF/ON switch, and a band switch labelled FM / AM.",
+  },
+  {
     file: "not-a-machine.jpg",
     prompt: "A bowl of fruit (mangoes, bananas, oranges) on a wooden kitchen table. No machines or buttons anywhere.",
   },
@@ -101,6 +128,10 @@ const cases: ProbeCase[] = [
   { id: "microwave-soup", photo: "microwave.jpg", task: "heat a bowl of soup for one minute", expect: "ok", expectedControls: ["START/+30SEC"], source: "generated" },
   { id: "rice-white", photo: "rice-cooker.jpg", task: "cook white rice", expect: "ok", expectedControls: ["MENU", "COOK/START"], source: "generated" },
   { id: "fan-low", photo: "fan.jpg", task: "turn the fan on at the lowest speed", expect: "ok", expectedControls: ["1"], source: "generated" },
+  { id: "remote-dim", photo: "remote-dim.jpg", task: "turn on the TV and go to channel 1", expect: "ok", expectedControls: ["POWER", "1"], source: "generated" },
+  { id: "washer-glare", photo: "washer-glare.jpg", task: "wash everyday clothes", expect: "ok", expectedControls: ["ON/OFF|ON|POWER", "COTTON|EASY CARE", "START/PAUSE|START"], source: "generated" },
+  { id: "air-fryer-chips", photo: "air-fryer.jpg", task: "cook some chips", expect: "ok", expectedControls: ["POWER", "FRIES", "START"], source: "generated" },
+  { id: "radio-on", photo: "radio.jpg", task: "turn the radio on", expect: "ok", expectedControls: ["OFF/ON|ON|OFF|POWER"], source: "generated" },
   { id: "fruit", photo: "not-a-machine.jpg", task: "wash everyday clothes", expect: "unusable_photo", expectedControls: [], source: "generated" },
 ];
 

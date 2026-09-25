@@ -6,6 +6,7 @@
  *   npm run probe
  *   GEMINI_MODEL=gemini-3.5-flash-lite PROBE_TAG=lite npm run probe   # compare a model
  */
+import { existsSync } from "node:fs";
 import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { findButtons, DEFAULT_MODEL, type FindButtonsOutput } from "../lib/gemini";
@@ -131,7 +132,14 @@ ${cards}
 }
 
 async function main() {
-  const cases: ProbeCase[] = JSON.parse(await readFile(path.join(OUT, "cases.json"), "utf8"));
+  // Generated cases, plus real photos when `npm run probe:real` has fetched them.
+  // PROBE_SET=real or PROBE_SET=generated runs just one set.
+  const sets = ["cases.json", "real-cases.json"].filter((f) => existsSync(path.join(OUT, f)));
+  const all: ProbeCase[] = (
+    await Promise.all(sets.map(async (f) => JSON.parse(await readFile(path.join(OUT, f), "utf8")) as ProbeCase[]))
+  ).flat();
+  const only = process.env.PROBE_SET;
+  const cases = only ? all.filter((c) => c.source === only) : all;
   const model = process.env.GEMINI_MODEL || DEFAULT_MODEL;
   console.log(`probing ${cases.length} cases with ${model}`);
 
