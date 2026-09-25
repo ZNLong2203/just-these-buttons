@@ -3,6 +3,7 @@
 import { useReducer } from "react";
 import ButtonOverlay from "./ButtonOverlay";
 import PhotoStage, { PhotoInput } from "./PhotoStage";
+import PrintSheet from "./PrintSheet";
 import StepList from "./StepList";
 import TaskStage from "./TaskStage";
 import { ErrorMessage, WorkingLine, type ErrorKind } from "./StatusMessage";
@@ -36,7 +37,8 @@ type Action =
   | { type: "find" }
   | { type: "found"; result: FindButtonsResult }
   | { type: "failed" }
-  | { type: "steps"; steps: Step[]; addedId?: string };
+  | { type: "steps"; steps: Step[]; addedId?: string }
+  | { type: "startAgain" };
 
 const initial: State = { stage: "photo", preparing: false, task: "", steps: [], truncated: false };
 
@@ -71,6 +73,8 @@ function reducer(state: State, action: Action): State {
       return { ...state, stage: "task", error: "unreachable" };
     case "steps":
       return { ...state, steps: action.steps, addedId: action.addedId };
+    case "startAgain":
+      return initial;
   }
 }
 
@@ -105,6 +109,12 @@ export default function JustTheseButtons() {
   const onFile = (file: File) => choosePhoto(() => preparePhoto(file));
   const onSample = () => choosePhoto(() => loadSample(SAMPLE_PATH), SAMPLE_TASK);
 
+  function startAgain() {
+    if (photo) URL.revokeObjectURL(photo.url);
+    dispatch({ type: "startAgain" });
+    window.scrollTo({ top: 0 });
+  }
+
   async function find() {
     if (!photo) return;
     dispatch({ type: "find" });
@@ -122,7 +132,8 @@ export default function JustTheseButtons() {
   }
 
   return (
-    <main className="mx-auto w-full max-w-[1120px] px-4 pt-8 pb-24 sm:px-6 sm:pt-12">
+    <>
+    <main className="mx-auto w-full max-w-[1120px] px-4 pt-8 pb-24 sm:px-6 sm:pt-12 print:hidden">
       <header className="mb-8 sm:mb-10">
         <h1 className="font-serif text-4xl font-semibold tracking-tight sm:text-5xl">Just These Buttons</h1>
         <p className="mt-2 text-xl text-muted">Photograph a machine. Keep only the buttons they need.</p>
@@ -205,11 +216,32 @@ export default function JustTheseButtons() {
                     No buttons kept. Tap the buttons they need on the photo, in order.
                   </p>
                 )}
+                <div className="mt-2 flex flex-col gap-3 sm:flex-row sm:items-center">
+                  <button
+                    type="button"
+                    onClick={() => window.print()}
+                    disabled={steps.length === 0}
+                    className="min-h-14 rounded-full bg-accent px-8 text-lg font-bold text-white transition-colors hover:bg-accent-strong disabled:cursor-not-allowed disabled:opacity-45"
+                  >
+                    Print card &amp; stickers
+                  </button>
+                  <button
+                    type="button"
+                    onClick={startAgain}
+                    className="min-h-12 rounded-full px-4 text-lg font-semibold text-muted underline decoration-2 underline-offset-4 hover:text-ink"
+                  >
+                    Start again with another machine
+                  </button>
+                </div>
               </div>
             )}
           </section>
         </div>
       )}
     </main>
+    {photo && stage === "result" && steps.length > 0 && (
+      <PrintSheet photo={photo} task={state.task} steps={steps} />
+    )}
+    </>
   );
 }

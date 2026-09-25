@@ -41,7 +41,7 @@ Commit messages follow this repo's Conventional Commits hook (`scripts/hooks/com
   Learner check: On the sample result, tap a lit button, tap a different button, rewrite one instruction in your own words, and move a step. Check that the photo and the list stay in step with each other.
   Commit: `feat(edit): let the caregiver fix any button before printing`
 
-- [ ] **4. Print the card and stickers**
+- [x] **4. Print the card and stickers**
   Becomes usable: **Print card & stickers** opens the print dialog showing one page. The step card is on top (task as title, black-and-white overlay, large steps) and a strip of number stickers in two sizes with a cut line is below. None of the app's controls appear.
   Why now: The paper is the product the grandparent actually meets. It depends on the corrected steps from slice 3.
   PRD ref: `prd.md > Features and Behavior > Printing the card and stickers`, `prd.md > The Core Journey` (steps 6–7)
@@ -88,4 +88,6 @@ Activity mode:
 - Prompt states that the machine starts switched off, gives one step per control, and always picks one setting — the probe showed the model otherwise drops power buttons, splits "press twice" into two steps, and offers "COTTON or MIX". Evidence in `docs/vision-probe.md`. (`spec.md > Components > Prompt`)
 - Probe gained `PROBE_TAG` (keep reports side by side) and a word-order-tolerant label check — needed to compare settings across repeated runs, because single runs varied.
 - Step numbers are placed beside their button by `lib/badges.ts`, with a leader line, instead of at each box's top-left corner — on the TV remote the corner badges covered the small neighbouring buttons they were meant to point at. Rings stay on the 0–1000 grid; numbers are placed in pixels because they have a fixed on-screen size. (`spec.md > Components > Button overlay`)
+- The printed photo zooms to the kept buttons (never below 55% of the photo's width, same proportions), instead of printing the whole photo — on the TV-remote card the needed keys printed a few millimetres wide. This is a visible change to the card; flagged for the learner's review. (`prd.md > Features and Behavior > Printing the card and stickers`, `spec.md > Components > Print sheet`)
+- The print overlay is its own aspect-correct SVG inside `PrintSheet` rather than `ButtonOverlay` in a `printMode` — the screen overlay measures itself in the browser to place numbers, which can't happen for a sheet that is hidden until printing. (`spec.md > Components > Button overlay`)
 
