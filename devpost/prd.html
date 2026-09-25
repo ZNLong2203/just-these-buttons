@@ -1,0 +1,480 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Just These Buttons PRD</title>
+<meta name="description" content="Visual companion to devpost/prd.md. The Markdown file is canonical.">
+<style>
+  :root {
+    --paper: #F7F3EC; --card: #FFFDF8; --ink: #1E1B16; --muted: #6B6358; --line: #E3DBCF;
+    --accent: #C2410C; --accent-ink: #FFFFFF; --accent-soft: #FFE9DA;
+    --panel: #E9E3D9; --btn: #FFFFFF; --btn-stroke: #B9AE9F; --dim: 0.16;
+    --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+    --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --paper: #14120F; --card: #1D1A16; --ink: #F2EDE4; --muted: #A89F92; --line: #37312A;
+      --accent: #FF8A4C; --accent-ink: #1D1A16; --accent-soft: #3A2419;
+      --panel: #2A2620; --btn: #3A342C; --btn-stroke: #5E554A; --dim: 0.22;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --paper: #14120F; --card: #1D1A16; --ink: #F2EDE4; --muted: #A89F92; --line: #37312A;
+    --accent: #FF8A4C; --accent-ink: #1D1A16; --accent-soft: #3A2419;
+    --panel: #2A2620; --btn: #3A342C; --btn-stroke: #5E554A; --dim: 0.22;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font: 17px/1.6 var(--sans); }
+  main { max-width: 960px; margin: 0 auto; padding: 48px 16px 80px; }
+  .eyebrow { font-size: 13px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+  h1 { font: 600 clamp(34px, 6.5vw, 52px)/1.05 var(--serif); margin: 8px 0 16px; }
+  h2 { font: 600 26px/1.2 var(--serif); margin: 0 0 16px; }
+  h3 { font-size: 14px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin: 0 0 8px; }
+  p { margin: 0 0 12px; }
+  .lede { font-size: 20px; color: var(--muted); max-width: 44em; }
+  section { margin-top: 56px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 20px 24px; }
+  code { font: 14px ui-monospace, Menlo, monospace; background: var(--line); padding: 1px 6px; border-radius: 6px; }
+
+  /* Scope → PRD expansion */
+  .expand { display: grid; gap: 12px; }
+  .pair { display: grid; grid-template-columns: 1fr 32px 1.6fr; align-items: stretch; gap: 0; }
+  .pair .was { background: var(--paper); border: 1px dashed var(--line); border-radius: 14px; padding: 14px 16px; color: var(--muted); font-style: italic; }
+  .pair .arrow { display: grid; place-items: center; color: var(--accent); font-size: 20px; }
+  .pair .now { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; }
+  .pair small { display: block; font-style: normal; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+  @media (max-width: 640px) {
+    .pair { grid-template-columns: 1fr; }
+    .pair .arrow { transform: rotate(90deg); height: 28px; }
+  }
+
+  /* Journey stepper */
+  .journey { display: grid; grid-template-columns: 300px 1fr; gap: 32px; align-items: start; }
+  @media (max-width: 760px) { .journey { grid-template-columns: 1fr; } .phone { margin: 0 auto; } }
+  .phone {
+    width: 300px; max-width: 100%; aspect-ratio: 9 / 17; border: 10px solid var(--ink); border-radius: 36px;
+    background: var(--paper); overflow: hidden; position: relative;
+  }
+  .scr { position: absolute; inset: 0; padding: 18px 16px; display: none; flex-direction: column; gap: 10px; font-size: 13px; }
+  .scr.on { display: flex; }
+  .scr .brand { font: 600 17px var(--serif); }
+  .scr .promise { color: var(--muted); font-size: 12.5px; line-height: 1.4; }
+  .scr .big { background: var(--ink); color: var(--paper); border-radius: 14px; padding: 14px; text-align: center; font-weight: 600; font-size: 14px; }
+  .scr .big.accent { background: var(--accent); color: var(--accent-ink); }
+  .scr .big.off { opacity: .35; }
+  .scr .link { text-align: center; color: var(--accent); font-weight: 600; font-size: 12.5px; }
+  .scr .fine { color: var(--muted); font-size: 11px; text-align: center; }
+  .scr .field { border: 1.5px solid var(--line); background: var(--card); border-radius: 10px; padding: 10px; color: var(--ink); }
+  .scr .field.ph { color: var(--muted); }
+  .scr .label { font-weight: 600; font-size: 12.5px; }
+  .scr .status { font-size: 12px; color: var(--muted); text-align: center; }
+  .scr ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+  .scr ol li { display: flex; gap: 8px; align-items: center; background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 6px 8px; font-size: 12.5px; }
+  .scr ol li b { flex: none; width: 22px; height: 22px; border-radius: 50%; background: var(--accent); color: var(--accent-ink); display: grid; place-items: center; font-size: 12px; }
+  .scr ol li.check { border-style: dashed; border-color: var(--accent); }
+  .scr ol li .tag { margin-left: auto; font-size: 10px; color: var(--accent); font-weight: 700; text-transform: uppercase; letter-spacing: .05em; }
+  .scr ol li .mv { margin-left: auto; color: var(--muted); letter-spacing: 2px; }
+  .spacer { flex: 1; }
+
+  /* mini washer — drawn once in <defs>, reused with <use>; colours flow in through custom properties */
+  .mw { width: 100%; height: auto; display: block; border-radius: 10px;
+    --w-panel: var(--panel); --w-ctl: var(--btn); --w-stroke: var(--btn-stroke); --w-ink: var(--ink);
+    --w-accent: var(--accent); --w-accent-ink: var(--accent-ink); }
+  .wd-panel { fill: var(--w-panel); }
+  .wd-ctl { fill: var(--w-ctl); stroke: var(--w-stroke); stroke-width: 1.5; }
+  .wd-ink { stroke: var(--w-ink); }
+  .wd-lbl { fill: var(--w-ink); font: 700 9px system-ui, -apple-system, sans-serif; }
+  .wd-ring { fill: none; stroke: var(--w-accent); stroke-width: 3; }
+  .wd-dash { stroke-dasharray: 5 4; }
+  .wd-num { fill: var(--w-accent); }
+  .wd-numt { fill: var(--w-accent-ink); font: 700 14px system-ui, -apple-system, sans-serif; }
+  .wd-fade { opacity: var(--dim); }
+  .mw .scan { fill: var(--accent); opacity: .18; }
+
+  /* paper */
+  .paperwrap { background: var(--panel); flex: 1; display: grid; place-items: center; border-radius: 12px; padding: 10px; }
+  .sheet { background: #fff; color: #111; width: 100%; aspect-ratio: 1 / 1.414; border-radius: 3px; padding: 10px; display: flex; flex-direction: column; gap: 6px; box-shadow: 0 6px 18px rgba(0,0,0,.18); }
+  .sheet .t { font: 700 12px var(--serif); }
+  .sheet .st { font-size: 10.5px; font-weight: 700; line-height: 1.35; }
+  .sheet .strip { margin-top: auto; border-top: 1px dashed #999; padding-top: 6px; display: flex; gap: 6px; align-items: center; justify-content: center; }
+  .sheet .dot { border-radius: 50%; background: #111; color: #fff; display: grid; place-items: center; font-weight: 700; }
+  .sheet .dot.s { width: 16px; height: 16px; font-size: 9px; }
+  .sheet .dot.l { width: 26px; height: 26px; font-size: 13px; }
+  .sheet .mwp { --w-panel: #EEEEEE; --w-ctl: #FFFFFF; --w-stroke: #999999; --w-ink: #111111; --w-accent: #111111; --w-accent-ink: #FFFFFF; }
+
+  .stepper-nav { display: flex; gap: 8px; align-items: center; margin-bottom: 16px; flex-wrap: wrap; }
+  .stepper-nav button {
+    font: 600 14px var(--sans); color: var(--ink); background: var(--card); border: 1px solid var(--line);
+    border-radius: 999px; min-width: 40px; height: 40px; padding: 0 14px; cursor: pointer;
+  }
+  .stepper-nav button[aria-current="step"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  .stepper-nav button:focus-visible, .pn button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+  .stepcopy { display: none; }
+  .stepcopy.on { display: block; }
+  .stepcopy h4 { font: 600 24px/1.25 var(--serif); margin: 0 0 8px; }
+  .stepcopy .from { font-size: 13px; color: var(--muted); margin-bottom: 12px; }
+  .crit { list-style: none; padding: 0; margin: 12px 0 0; display: grid; gap: 8px; }
+  .crit li { display: flex; gap: 10px; align-items: flex-start; font-size: 15.5px; }
+  .crit li::before { content: ""; flex: none; width: 18px; height: 18px; margin-top: 3px; border: 2px solid var(--accent); border-radius: 5px; }
+  .pn { display: flex; gap: 8px; margin-top: 20px; }
+  .pn button { font: 600 15px var(--sans); border-radius: 999px; padding: 10px 18px; cursor: pointer; border: 1px solid var(--line); background: var(--card); color: var(--ink); }
+  .pn button.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+  .pn button:disabled { opacity: .4; cursor: default; }
+
+  /* States */
+  .states { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 12px; }
+  .state { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 16px 18px; }
+  .state.err { border-left: 4px solid var(--accent); }
+  .state b { display: block; margin-bottom: 4px; }
+  .state q { display: block; color: var(--muted); font-size: 15px; quotes: "“" "”"; }
+
+  /* Decisions */
+  table { width: 100%; border-collapse: collapse; font-size: 15.5px; }
+  th, td { text-align: left; padding: 12px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+  .who { font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; padding: 3px 8px; border-radius: 999px; white-space: nowrap; }
+  .who.l { background: var(--ink); color: var(--paper); }
+  .who.p { border: 1px solid var(--muted); color: var(--muted); }
+  .tablewrap { overflow-x: auto; }
+
+  details { border: 1px solid var(--line); border-radius: 14px; background: var(--card); margin-bottom: 12px; }
+  details > summary { list-style: none; cursor: pointer; padding: 16px 20px; display: flex; align-items: center; gap: 12px; font-weight: 600; }
+  details > summary::-webkit-details-marker { display: none; }
+  details > summary::after { content: "+"; margin-left: auto; font-size: 22px; color: var(--muted); line-height: 1; }
+  details[open] > summary::after { content: "–"; }
+  details > summary:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; border-radius: 14px; }
+  details ul { margin: 0; padding: 0 20px 16px 40px; }
+  details li { margin-bottom: 8px; }
+  .pill { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; padding: 4px 10px; border-radius: 999px; }
+  .pill.now { background: var(--accent); color: var(--accent-ink); }
+  .pill.later { background: var(--line); color: var(--ink); }
+  .pill.cut { border: 1px solid var(--muted); color: var(--muted); }
+  .pill.q { background: var(--accent-soft); color: var(--accent); }
+
+  .look { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
+  .swatch { display: flex; gap: 10px; align-items: center; }
+  .chip { width: 40px; height: 40px; border-radius: 10px; border: 1px solid var(--line); flex: none; }
+  footer.page { margin-top: 64px; font-size: 13px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 16px; }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <div class="eyebrow">Product requirements · approved</div>
+    <h1>Just These Buttons</h1>
+    <p class="lede">A one-page web app for a grandchild or adult child caring for an elderly grandparent: photograph one machine, name one task, and print a card and number stickers that show only the buttons that task needs.</p>
+  </header>
+
+  <section aria-labelledby="exp-h">
+    <h2 id="exp-h">What scope said, and what we now know</h2>
+    <div class="expand">
+      <div class="pair">
+        <div class="was"><small>Scope</small>“One tap fixes a wrong button.”</div>
+        <div class="arrow" aria-hidden="true">→</div>
+        <div class="now"><small>PRD</small>Tap a lit button to remove it, tap anywhere else to add a step, edit any wording, move steps up or down. Unsure steps arrive flagged <strong>Check this one</strong>.</div>
+      </div>
+      <div class="pair">
+        <div class="was"><small>Scope</small>“AI locates and orders the needed buttons.”</div>
+        <div class="arrow" aria-hidden="true">→</div>
+        <div class="now"><small>PRD</small>Presses and dial turns, in order, aiming for two or three and never more than five — each step's wording taken from what's printed on the machine.</div>
+      </div>
+      <div class="pair">
+        <div class="was"><small>Scope</small>“A print view: the step card and a sheet of numbered stickers.”</div>
+        <div class="arrow" aria-hidden="true">→</div>
+        <div class="now"><small>PRD</small>One page that fits A4 and Letter: card on top with the task as its title, sticker strip below with cut lines — still clear from a black-and-white printer.</div>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="j-h">
+    <h2 id="j-h">The core journey</h2>
+    <div class="stepper-nav" role="group" aria-label="Journey steps" id="dots"></div>
+    <div class="journey">
+      <div class="phone" aria-hidden="true">
+        <!-- 1 open -->
+        <div class="scr" data-s="1">
+          <div class="brand">Just These Buttons</div>
+          <div class="promise">Photograph a machine. Keep only the buttons they need.</div>
+          <div class="spacer"></div>
+          <div class="big">Photograph the machine</div>
+          <div class="link">Try a sample washing machine</div>
+          <div class="fine">Your photo is sent to an AI service to find the buttons. It isn't stored.</div>
+          <div class="spacer"></div>
+        </div>
+        <!-- 2 photo -->
+        <div class="scr" data-s="2">
+          <div class="brand">Just These Buttons</div>
+          <svg class="mw" viewBox="0 0 300 140"><use href="#washer"/></svg>
+          <div class="fine">Retake</div>
+          <div class="label">What should they be able to do?</div>
+          <div class="field ph">wash everyday clothes</div>
+          <div class="big off">Find the buttons</div>
+        </div>
+        <!-- 3 task -->
+        <div class="scr" data-s="3">
+          <div class="brand">Just These Buttons</div>
+          <svg class="mw" viewBox="0 0 300 140"><use href="#washer"/></svg>
+          <div class="label">What should they be able to do?</div>
+          <div class="field">wash everyday clothes</div>
+          <div class="big accent">Find the buttons</div>
+        </div>
+        <!-- 4 working -->
+        <div class="scr" data-s="4">
+          <div class="brand">Just These Buttons</div>
+          <svg class="mw" viewBox="0 0 300 140"><use href="#washer"/><rect class="scan" x="10" y="10" width="110" height="120" rx="8"/></svg>
+          <div class="status">Finding the buttons for <em>wash everyday clothes</em>…</div>
+          <div class="big off">Find the buttons</div>
+        </div>
+        <!-- 5 result -->
+        <div class="scr" data-s="5">
+          <div class="brand">Just These Buttons</div>
+          <svg class="mw" viewBox="0 0 300 140"><use href="#washer-result"/></svg>
+          <ol>
+            <li><b>1</b> Press POWER.</li>
+            <li class="check"><b>2</b> Turn the big dial to COTTON. <span class="tag">Check this one</span></li>
+            <li><b>3</b> Press START.</li>
+          </ol>
+          <div class="spacer"></div>
+          <div class="big accent">Print card &amp; stickers</div>
+        </div>
+        <!-- 6 fix -->
+        <div class="scr" data-s="6">
+          <div class="brand">Just These Buttons</div>
+          <svg class="mw" viewBox="0 0 300 140"><use href="#washer-fixed"/></svg>
+          <ol>
+            <li><b>1</b> Press POWER. <span class="mv">↑↓</span></li>
+            <li><b>2</b> Turn the big dial to COTTON. <span class="mv">↑↓</span></li>
+            <li><b>3</b> Press the big round button on the right. <span class="mv">↑↓</span></li>
+          </ol>
+          <div class="fine">Tap a lit button to remove it · tap elsewhere to add one</div>
+          <div class="big accent">Print card &amp; stickers</div>
+        </div>
+        <!-- 7 print -->
+        <div class="scr" data-s="7">
+          <div class="paperwrap">
+            <div class="sheet">
+              <div class="t">Washing everyday clothes</div>
+              <svg class="mw mwp" viewBox="0 0 300 140"><use href="#washer-fixed"/></svg>
+              <div class="st">1 Press POWER.<br>2 Turn the big dial to COTTON.<br>3 Press the big round button on the right.</div>
+              <div class="strip"><span class="dot s">1</span><span class="dot s">2</span><span class="dot s">3</span><span class="dot l">1</span><span class="dot l">2</span><span class="dot l">3</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="stepcopy" data-s="1">
+          <h4>1 · Open the link</h4>
+          <p class="from">Screens and Layout · First use</p>
+          <p>The name, a one-line promise, one large <strong>Photograph the machine</strong> button, and a quieter <strong>Try a sample washing machine</strong> link. One line says the photo goes to an AI service and isn't stored.</p>
+          <ul class="crit"><li>On a phone, the button offers the camera; on a laptop, a file picker.</li><li>One tap on the sample reaches a result without taking any photo.</li></ul>
+        </div>
+        <div class="stepcopy" data-s="2">
+          <h4>2 · Take the photo</h4>
+          <p class="from">Features and Behavior › Taking the photo</p>
+          <p>The photo appears on the page, with <strong>Retake</strong>. Underneath, one question: <em>What should they be able to do?</em></p>
+          <ul class="crit"><li>The chosen photo shows within a second.</li><li>With no task text, <strong>Find the buttons</strong> is visibly disabled.</li></ul>
+        </div>
+        <div class="stepcopy" data-s="3">
+          <h4>3 · Name the task</h4>
+          <p class="from">Features and Behavior › Naming the task</p>
+          <p>Plain words, the way the family would say it. The same words become the title of the printed card.</p>
+          <ul class="crit"><li>The task text reappears as the card's title.</li></ul>
+        </div>
+        <div class="stepcopy" data-s="4">
+          <h4>4 · The app works</h4>
+          <p class="from">States and Boundaries › Working</p>
+          <p>The photo stays in view with a calm line saying what it's looking for. Controls wait until it's done. If it fails, the photo and task are kept for another try.</p>
+          <ul class="crit"><li>Nothing the caregiver entered is lost if the AI can't be reached.</li></ul>
+        </div>
+        <div class="stepcopy" data-s="5">
+          <h4>5 · Just these buttons</h4>
+          <p class="from">Features and Behavior › Finding the buttons — the kernel</p>
+          <p>Everything not needed is dimmed. The needed controls are ringed and numbered in order, with one plain instruction each. A step the AI isn't sure of is marked <strong>Check this one</strong> and gets a dashed ring.</p>
+          <ul class="crit"><li>Sample washer + “wash everyday clothes” → two to four steps, each at the right control.</li><li>Every other control is visibly dimmed.</li><li>Numbers on the photo match numbers in the list.</li></ul>
+        </div>
+        <div class="stepcopy" data-s="6">
+          <h4>6 · The caregiver checks</h4>
+          <p class="from">Features and Behavior › Correcting the result</p>
+          <p>Tap a lit button to remove it; tap elsewhere to add a step there; rewrite any instruction; move steps up or down. The photo and the list move together.</p>
+          <ul class="crit"><li>Remove, add and reorder update photo and list together.</li><li>An edited instruction is exactly what prints.</li></ul>
+        </div>
+        <div class="stepcopy" data-s="7">
+          <h4>7 · Print, tape, stick</h4>
+          <p class="from">Features and Behavior › Printing the card and stickers</p>
+          <p>One page: the card on top, a strip of number stickers below. It goes next to the real machine; the numbers go on the real buttons. <strong>Success is the grandparent doing the task from the card, without a phone.</strong></p>
+          <ul class="crit"><li>Print preview shows exactly one page with card and stickers.</li><li>No app controls appear on the printout.</li><li>In black and white, the kept buttons are still clearly marked.</li></ul>
+        </div>
+        <div class="pn">
+          <button type="button" id="prev">Back</button>
+          <button type="button" id="next" class="primary">Next step</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="look-h">
+    <h2 id="look-h">Look and feel</h2>
+    <p>Calm and warm, like a note left on the fridge by someone who cares — not a tech product, not a hospital form.</p>
+    <div class="look">
+      <div class="card swatch"><span class="chip" style="background:#F7F3EC"></span><div><b>Paper</b><br><small>warm off-white</small></div></div>
+      <div class="card swatch"><span class="chip" style="background:#1E1B16"></span><div><b>Ink</b><br><small>near-black</small></div></div>
+      <div class="card swatch"><span class="chip" style="background:#C2410C"></span><div><b>Burnt orange</b><br><small>only for lit buttons and numbers</small></div></div>
+      <div class="card"><b style="font-family:var(--serif);font-size:20px">Sturdy serif</b><br><small>headings and the card's title</small></div>
+      <div class="card"><b>Legible sans</b><br><small>everything else, large sizes</small></div>
+      <div class="card"><b>Avoid</b><br><small>gradients, sparkles, robot icons, “AI magic” styling</small></div>
+    </div>
+  </section>
+
+  <section aria-labelledby="st-h">
+    <h2 id="st-h">States and boundaries</h2>
+    <div class="states">
+      <div class="state"><b>First use</b>Only the promise, the photo button and the sample link.</div>
+      <div class="state"><b>Working</b><q>Finding the buttons for wash everyday clothes…</q></div>
+      <div class="state"><b>Result</b>Dimmed photo, numbered rings, steps, Print, Start again.</div>
+      <div class="state err"><b>Photo can't be used</b><q>I can't make out the buttons in this photo. Try again closer, with the lights on.</q></div>
+      <div class="state err"><b>Task not possible</b><q>I couldn't find buttons for that on this machine. Try wording it differently, or tap the buttons yourself.</q></div>
+      <div class="state err"><b>More than five steps</b>First five shown, with a note to split it into two cards.</div>
+      <div class="state err"><b>AI unreachable</b><q>Something went wrong finding the buttons. Your photo is still here — try again.</q></div>
+      <div class="state"><b>Nothing persists</b>Refresh starts over. The photo is never stored.</div>
+    </div>
+  </section>
+
+  <section aria-labelledby="dec-h">
+    <h2 id="dec-h">Product decisions</h2>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Decision</th><th>Why</th><th>From</th></tr></thead>
+        <tbody>
+          <tr><td>Built for the family member, not the grandparent</td><td>The grandparent only ever meets the paper.</td><td><span class="who l">Learner</span></td></tr>
+          <tr><td>Web, opened by link, no install</td><td>Asked for a web version.</td><td><span class="who l">Learner</span></td></tr>
+          <tr><td>English interface and card</td><td>Chosen for the submission.</td><td><span class="who l">Learner</span></td></tr>
+          <tr><td>Washing machine and TV remote first; phones cut</td><td>Grandmother struggles with all three; phones are a different problem.</td><td><span class="who l">Learner</span></td></tr>
+          <tr><td>One page, stacked stages</td><td>Nothing to navigate; a tired caregiver can't get lost.</td><td><span class="who p">Proposed</span></td></tr>
+          <tr><td>Caregiver always checks; unsure steps flagged</td><td>A wrong card is worse than no card.</td><td><span class="who p">Proposed</span></td></tr>
+          <tr><td>Two or three steps, never more than five</td><td>A card with many steps stops being simple.</td><td><span class="who p">Proposed</span></td></tr>
+          <tr><td>Card and stickers on one page</td><td>One print action, one sheet.</td><td><span class="who p">Proposed</span></td></tr>
+          <tr><td>Works on a black-and-white printer</td><td>Many homes don't have colour.</td><td><span class="who p">Proposed</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section aria-labelledby="b-h">
+    <h2 id="b-h">Boundary</h2>
+    <details open>
+      <summary><span class="pill now">Building</span> What the proof of concept must do</summary>
+      <ul>
+        <li>The one-page flow: photo → task → result.</li>
+        <li>AI finding and ordering the needed controls, with dimming, numbered rings and plain-word steps.</li>
+        <li>Correcting: remove, add, edit, reorder, clear “check this one”.</li>
+        <li>The one-page print layout: step card plus number-sticker strip.</li>
+        <li>The sample washing machine.</li>
+        <li>The states above.</li>
+      </ul>
+    </details>
+    <details>
+      <summary><span class="pill later">Deferred</span> Implied, not now</summary>
+      <ul>
+        <li><strong>Cover patches at each button's real size</strong> — needs real-world scale; numbered stickers prove the idea.</li>
+        <li><strong>Card in the grandparent's own language</strong> — the English card proves the kernel.</li>
+        <li><strong>Reading steps aloud</strong> — the card is the product.</li>
+        <li><strong>Saving machines, sharing a PDF or link</strong> — would need storage or accounts.</li>
+        <li><strong>Several tasks per card</strong> — a second task is a second card.</li>
+      </ul>
+    </details>
+    <details>
+      <summary><span class="pill cut">Non-goals</span> Will not do</summary>
+      <ul>
+        <li>No live camera or AR guide · no phones or touchscreens · no accounts · no native app.</li>
+        <li>Not a medical or safety tool — it simplifies controls; it doesn't decide what's safe to use.</li>
+        <li>Not for late-stage dementia — the target is early decline, low vision and general confusion with machines.</li>
+      </ul>
+    </details>
+    <details>
+      <summary><span class="pill q">Open</span> Questions that don't block the spec</summary>
+      <ul>
+        <li>How reliably can the AI find small buttons, such as on a TV remote? First thing to test in the build; correction tools are the fallback.</li>
+        <li>Which sample photo? Ideally the grandmother's own machine, with permission.</li>
+      </ul>
+    </details>
+  </section>
+
+  <footer class="page">Visual companion to <code>devpost/prd.md</code>, which is canonical. Phone and paper drawings are illustrations for planning, not app output.</footer>
+</main>
+
+<!-- Shared washer drawings -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <rect id="washer-base" class="wd-panel" x="4" y="4" width="292" height="132" rx="12"/>
+    <g id="w-power"><circle class="wd-ctl" cx="36" cy="70" r="16"/><text class="wd-lbl" x="36" y="102" text-anchor="middle">POWER</text></g>
+    <g id="w-dial"><circle class="wd-ctl" cx="100" cy="70" r="30"/><line class="wd-ink" x1="100" y1="70" x2="100" y2="48" stroke-width="3" stroke-linecap="round"/><text class="wd-lbl" x="100" y="28" text-anchor="middle">COTTON</text></g>
+    <g id="w-opts">
+      <rect class="wd-ctl" x="150" y="24" width="70" height="26" rx="6"/>
+      <rect class="wd-ctl" x="150" y="60" width="32" height="20" rx="5"/><rect class="wd-ctl" x="188" y="60" width="32" height="20" rx="5"/>
+      <rect class="wd-ctl" x="150" y="88" width="32" height="20" rx="5"/><rect class="wd-ctl" x="188" y="88" width="32" height="20" rx="5"/>
+      <rect class="wd-ctl" x="228" y="24" width="22" height="16" rx="4"/><rect class="wd-ctl" x="228" y="48" width="22" height="16" rx="4"/>
+      <rect class="wd-ctl" x="228" y="72" width="22" height="16" rx="4"/><rect class="wd-ctl" x="228" y="96" width="22" height="16" rx="4"/>
+      <text class="wd-lbl" x="150" y="124">SPIN · WOOL · MIX</text>
+    </g>
+    <g id="w-start"><circle class="wd-ctl" cx="272" cy="70" r="16"/><path class="wd-ink" d="M267 62 l9 8 -9 8 z" style="fill:var(--w-ink)"/><text class="wd-lbl" x="272" y="102" text-anchor="middle">START</text></g>
+
+    <g id="washer"><use href="#washer-base"/><use href="#w-power"/><use href="#w-dial"/><use href="#w-opts"/><use href="#w-start"/></g>
+
+    <g id="w-marks">
+      <circle class="wd-ring" cx="36" cy="70" r="21"/><circle class="wd-num" cx="18" cy="46" r="11"/><text class="wd-numt" x="18" y="51" text-anchor="middle">1</text>
+      <circle class="wd-num" cx="70" cy="36" r="11"/><text class="wd-numt" x="70" y="41" text-anchor="middle">2</text>
+      <circle class="wd-ring" cx="272" cy="70" r="21"/><circle class="wd-num" cx="286" cy="44" r="11"/><text class="wd-numt" x="286" y="49" text-anchor="middle">3</text>
+    </g>
+
+    <g id="washer-result">
+      <use href="#washer-base"/><use href="#w-power"/><use href="#w-dial"/><use href="#w-start"/>
+      <g class="wd-fade"><use href="#w-opts"/></g>
+      <use href="#w-marks"/><circle class="wd-ring wd-dash" cx="100" cy="70" r="35"/>
+    </g>
+
+    <g id="washer-fixed">
+      <use href="#washer-base"/><use href="#w-power"/><use href="#w-dial"/><use href="#w-start"/>
+      <g class="wd-fade"><use href="#w-opts"/></g>
+      <use href="#w-marks"/><circle class="wd-ring" cx="100" cy="70" r="35"/>
+    </g>
+  </defs>
+</svg>
+
+<script>
+  (function () {
+    var total = 7, cur = 1;
+    var dots = document.getElementById('dots');
+    var labels = ['Open', 'Photo', 'Task', 'Working', 'Result', 'Check', 'Print'];
+    labels.forEach(function (l, i) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.textContent = (i + 1) + ' ' + l;
+      b.addEventListener('click', function () { go(i + 1); });
+      dots.appendChild(b);
+    });
+    var prev = document.getElementById('prev'), next = document.getElementById('next');
+    prev.addEventListener('click', function () { go(cur - 1); });
+    next.addEventListener('click', function () { go(cur + 1); });
+    function go(n) {
+      cur = Math.max(1, Math.min(total, n));
+      document.querySelectorAll('.scr, .stepcopy').forEach(function (el) {
+        el.classList.toggle('on', Number(el.dataset.s) === cur);
+      });
+      Array.prototype.forEach.call(dots.children, function (b, i) {
+        if (i + 1 === cur) b.setAttribute('aria-current', 'step'); else b.removeAttribute('aria-current');
+      });
+      prev.disabled = cur === 1;
+      next.disabled = cur === total;
+    }
+    var m = /^#step-(\d)$/.exec(location.hash);
+    go(m ? Number(m[1]) : 1);
+  })();
+</script>
+</body>
+</html>
