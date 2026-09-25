@@ -1,0 +1,75 @@
+@import "tailwindcss";
+
+/*
+ * Paper, ink and one burnt orange. The accent is only ever used for the
+ * buttons that stay lit, their numbers, and the one primary action on screen.
+ */
+:root {
+  --paper: #f7f3ec;
+  --card: #fffdf8;
+  --ink: #1e1b16;
+  --muted: #6b6358;
+  --line: #e3dbcf;
+  --accent: #c2410c;
+  --accent-strong: #9a3412;
+  --accent-soft: #ffe9da;
+}
+
+@theme inline {
+  --color-paper: var(--paper);
+  --color-card: var(--card);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-accent: var(--accent);
+  --color-accent-strong: var(--accent-strong);
+  --color-accent-soft: var(--accent-soft);
+  --font-sans: var(--font-atkinson), system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+  --font-serif: var(--font-source-serif), "Iowan Old Style", Georgia, serif;
+}
+
+html {
+  color-scheme: light;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 18px;
+  line-height: 1.55;
+}
+
+h1,
+h2,
+h3 {
+  text-wrap: balance;
+}
+
+:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 3px;
+}
+
+/* A slow band of light moving down the photo while the model works. */
+@keyframes scan {
+  from {
+    transform: translateY(-100%);
+  }
+  to {
+    transform: translateY(100%);
+  }
+}
+
+.scan-band {
+  background: linear-gradient(180deg, transparent, rgb(255 233 218 / 0.55), transparent);
+  animation: scan 1.8s ease-in-out infinite alternate;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scan-band {
+    animation: none;
+    opacity: 0.35;
+  }
+}

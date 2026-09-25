@@ -24,3 +24,13 @@ export type FindButtonsResult =
   | { status: "ok"; steps: Step[]; truncated: boolean }
   | { status: "unusable_photo" }
   | { status: "task_not_possible" };
+
+export type Photo = {
+  /** Object URL for display; revoked when the photo is replaced. */
+  url: string;
+  base64: string;
+  mimeType: "image/jpeg";
+  width: number;
+  height: number;
+  isSample: boolean;
+};

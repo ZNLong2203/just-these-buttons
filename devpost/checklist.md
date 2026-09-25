@@ -21,7 +21,7 @@ Commit messages follow this repo's Conventional Commits hook (`scripts/hooks/com
   Learner check: Open `probe/report.html` in a browser. For each photo, look at whether the boxes sit on the buttons you would press for that task, in that order, and say how many you'd trust on a card for your grandmother.
   Commit: `feat(vision): prove the model can find the buttons a task needs`
 
-- [ ] **2. Photograph a machine, name a task, see just these buttons**
+- [x] **2. Photograph a machine, name a task, see just these buttons**
   Becomes usable: Open `http://localhost:3000`, take or choose a photo (or tap the sample washer), type a task, press **Find the buttons**, and see the same photo come back with everything dimmed except the needed controls, ringed and numbered, with the steps listed underneath. This is the kernel, working in the real interface with the planned look.
   Why now: The kernel comes before everything else in the interface. Correction and printing only matter once this moment exists, and early feedback on how it looks and feels can still shape the rest.
   PRD ref: `prd.md > The Core Journey` (steps 1–4), `prd.md > Screens and Layout`, `prd.md > Look and Feel`, `prd.md > Features and Behavior > Taking the photo`, `> Naming the task`, `> Finding the buttons`, `> Sample machine`
@@ -63,7 +63,7 @@ Commit messages follow this repo's Conventional Commits hook (`scripts/hooks/com
 
 ## Hands-on Checkpoints
 
-- [ ] Early usable behavior explored — after slice 2 (the kernel in the real interface), while look, feel and accuracy can still shape slices 3–5. The slice 1 probe report is also reviewed at its own learner check because it decides the prompt.
+- [ ] Early usable behavior explored — after slice 2 (the kernel in the real interface), while look, feel and accuracy can still shape slices 3–5. The slice 1 probe report is also reviewed at its own learner check because it decides the prompt. *Pending: the learner stepped away after slice 1 and asked the build to continue ("cái nào làm đc cứ tiếp"); slices 1–2 learner checks are queued for their return and feed the final review.*
 - [ ] Final kick-the-tires exploration and feedback completed
 
 ## Final Review
@@ -87,4 +87,5 @@ Activity mode:
 - Thinking level `LOW` instead of `MINIMAL` — `gemini-3.8-flash` rejects `MINIMAL` with a 400; `LOW` is its floor. Overridable with `GEMINI_THINKING`. (`spec.md > Stack`, `> External Services and Dependencies`)
 - Prompt states that the machine starts switched off, gives one step per control, and always picks one setting — the probe showed the model otherwise drops power buttons, splits "press twice" into two steps, and offers "COTTON or MIX". Evidence in `docs/vision-probe.md`. (`spec.md > Components > Prompt`)
 - Probe gained `PROBE_TAG` (keep reports side by side) and a word-order-tolerant label check — needed to compare settings across repeated runs, because single runs varied.
+- Step numbers are placed beside their button by `lib/badges.ts`, with a leader line, instead of at each box's top-left corner — on the TV remote the corner badges covered the small neighbouring buttons they were meant to point at. Rings stay on the 0–1000 grid; numbers are placed in pixels because they have a fixed on-screen size. (`spec.md > Components > Button overlay`)
 
