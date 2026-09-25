@@ -22,7 +22,8 @@ Three pieces, one request, no storage.
 | `lib/badges.ts` | browser | Places each number beside its button without covering any kept button or another number. |
 | `lib/steps.ts` | browser | Pure edits: `hitTest`, `removeStep`, `addStepAt`, `moveStep`, `editInstruction` (which also clears the flag), `clearFlag`. |
 | `components/StepList.tsx` | browser | Editable, reorderable steps, and the *Check this one* flag. |
-| `components/PrintSheet.tsx` | browser | A print-only page: an aspect-correct SVG zoomed to the kept buttons, large steps, and a sticker strip. |
+| `components/PrintSheet.tsx` | browser | `CardSheet`, the card itself: an aspect-correct SVG zoomed to the kept buttons, large steps, and a sticker strip. It is drawn twice: scaled on screen by `CardPreview`, and full size in the print-only copy. |
+| `lib/languages.ts` | both | The card languages. The card's language is chosen apart from the machine's, and `:lang(vi)` switches Vietnamese text to Be Vietnam Pro. |
 | `app/api/find-buttons/route.ts` | server | Rate limit, JSON and size checks, `findButtons()`, then a status-only log line. |
 | `lib/gemini.ts` | server | One `generateContent` call. It sends the image part at high media resolution, asks for JSON against a schema, uses `LOW` thinking, and aborts after 25 s. |
 | `lib/prompt.ts` | server | The instruction. It says the machine starts switched off, asks for one step per control and one setting per step, and says when to refuse. |
@@ -31,7 +32,7 @@ Three pieces, one request, no storage.
 
 ## One request
 
-1. The page sends `POST /api/find-buttons` with `{ image: <base64 JPEG>, mimeType: "image/jpeg", task }`.
+1. The page sends `POST /api/find-buttons` with `{ image: <base64 JPEG>, mimeType: "image/jpeg", task, language }`.
 2. The route counts the visitor. If they are over the limit it returns **429**. An image over 4 MB of base64 gets **413**, and a malformed body gets **400**.
 3. `findButtons()` sends the photo and prompt. Gemini replies:
 
