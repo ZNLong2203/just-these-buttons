@@ -1,5 +1,6 @@
 "use client";
 
+import { useId, useLayoutEffect, useRef, useState } from "react";
 import { nearestOnRect, placeBadges, type Rect } from "@/lib/badges";
 import type { Photo, Step } from "@/lib/types";
 
@@ -30,6 +31,8 @@ const PRINT_WIDTH_MM = 186;
 
 /** Same idea as the on-screen overlay, drawn for paper: one SVG, black ink, the rest washed out. */
 function PrintOverlay({ photo, steps }: { photo: Photo; steps: Step[] }) {
+  // The card is drawn twice (preview and print), so its SVG ids must differ.
+  const id = useId().replace(/[^a-zA-Z0-9_-]/g, "");
   const W = 1000;
   const H = Math.round((1000 * photo.height) / photo.width);
   const pad = 12;
@@ -55,7 +58,7 @@ function PrintOverlay({ photo, steps }: { photo: Photo; steps: Step[] }) {
       aria-label="The machine with only the needed buttons kept"
     >
       <defs>
-        <filter id="print-fade">
+        <filter id={`${id}-fade`}>
           <feColorMatrix type="saturate" values="0" />
           <feComponentTransfer>
             <feFuncR type="linear" slope="0.3" intercept="0.7" />
@@ -63,15 +66,15 @@ function PrintOverlay({ photo, steps }: { photo: Photo; steps: Step[] }) {
             <feFuncB type="linear" slope="0.3" intercept="0.7" />
           </feComponentTransfer>
         </filter>
-        <mask id="print-keep">
+        <mask id={`${id}-keep`}>
           <rect width={W} height={H} fill="black" />
           {rects.map((r, i) => (
             <rect key={i} x={r.left} y={r.top} width={r.right - r.left} height={r.bottom - r.top} rx={1.5 * mm} fill="white" />
           ))}
         </mask>
       </defs>
-      <image href={photo.url} width={W} height={H} preserveAspectRatio="none" filter="url(#print-fade)" />
-      <image href={photo.url} width={W} height={H} preserveAspectRatio="none" mask="url(#print-keep)" />
+      <image href={photo.url} width={W} height={H} preserveAspectRatio="none" filter={`url(#${id}-fade)`} />
+      <image href={photo.url} width={W} height={H} preserveAspectRatio="none" mask={`url(#${id}-keep)`} />
       {rects.map((r, i) => (
         <rect
           key={`ring-${i}`}
@@ -107,12 +110,13 @@ const sentenceCase = (s: string) => {
 };
 
 /**
- * Only exists on paper. One page, laid out in millimetres to fit inside both
- * A4 and US Letter: the step card on top, a strip of number stickers below.
+ * The card: one page laid out in millimetres to fit inside both A4 and US
+ * Letter — the step card on top, a strip of number stickers below. Drawn by
+ * the on-screen preview and by the print-only copy, so they can't disagree.
  */
-export default function PrintSheet({ photo, title, language, steps }: Props) {
+export function CardSheet({ photo, title, language, steps }: Props) {
   return (
-    <div className="print-sheet" aria-hidden="true" lang={language}>
+    <div className="print-sheet" lang={language}>
       <section className="print-card">
         <h2 className="print-title">{sentenceCase(title)}</h2>
         <PrintOverlay photo={photo} steps={steps} />
@@ -148,5 +152,50 @@ export default function PrintSheet({ photo, title, language, steps }: Props) {
         </div>
       </section>
     </div>
+  );
+}
+
+/** Only exists on paper. */
+export default function PrintSheet(props: Props) {
+  return (
+    <div className="print-only" aria-hidden="true">
+      <CardSheet {...props} />
+    </div>
+  );
+}
+
+/** A4 at 96 dpi: the size the browser lays the .card-paper page out at. */
+const PAGE_W = (210 / 25.4) * 96;
+const PAGE_H = (297 / 25.4) * 96;
+
+/** The card as it will print, scaled down to fit the column, following every edit. */
+export function CardPreview(props: Props) {
+  const frame = useRef<HTMLDivElement>(null);
+  const [width, setWidth] = useState(0);
+  useLayoutEffect(() => {
+    const el = frame.current;
+    if (!el) return;
+    const observer = new ResizeObserver(([entry]) => setWidth(entry.contentRect.width));
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+  const scale = width / PAGE_W;
+
+  return (
+    <figure className="flex flex-col gap-2">
+      <div
+        ref={frame}
+        aria-hidden="true"
+        className="relative w-full overflow-hidden rounded-lg shadow-[0_0_0_1px_var(--line),0_18px_40px_-24px_rgb(30_27_22/0.5)]"
+        style={{ height: PAGE_H * scale || undefined, aspectRatio: width ? undefined : "210 / 297" }}
+      >
+        {width > 0 && (
+          <div className="card-paper absolute top-0 left-0 origin-top-left" style={{ transform: `scale(${scale})` }}>
+            <CardSheet {...props} />
+          </div>
+        )}
+      </div>
+      <figcaption className="text-sm text-muted">The card as it will print. It changes as you edit the steps.</figcaption>
+    </figure>
   );
 }

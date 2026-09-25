@@ -3,7 +3,7 @@
 import { useReducer } from "react";
 import ButtonOverlay from "./ButtonOverlay";
 import PhotoStage, { PhotoInput } from "./PhotoStage";
-import PrintSheet from "./PrintSheet";
+import PrintSheet, { CardPreview } from "./PrintSheet";
 import StepList from "./StepList";
 import TaskStage from "./TaskStage";
 import { ErrorMessage, WorkingLine, type ErrorKind } from "./StatusMessage";
@@ -284,6 +284,12 @@ export default function JustTheseButtons() {
                   <p className="rounded-2xl border-2 border-dashed border-line p-4 text-lg text-muted">
                     No buttons kept. Tap the buttons they need on the photo, in order.
                   </p>
+                )}
+                {steps.length > 0 && photo && (
+                  <div className="mt-2">
+                    <h3 className="mb-3 text-sm font-bold tracking-[0.12em] text-muted uppercase">The card</h3>
+                    <CardPreview photo={photo} title={state.title || state.task} language={state.language} steps={steps} />
+                  </div>
                 )}
                 <div className="mt-2 flex flex-col gap-3 sm:flex-row sm:items-center">
                   <button

@@ -71,7 +71,7 @@ Commit messages follow this repo's Conventional Commits hook (`scripts/hooks/com
   Learner check: Try the Japanese remote sample in English, then switch to Tiếng Việt and find again. Is the Vietnamese natural, and could your grandmother match 「運転入/切」 on the card to the button?
   Commit: `feat(language): write the card in the grandparent's language`
 
-- [ ] **7. See the card before printing**
+- [x] **7. See the card before printing**
   Becomes usable: Under the steps, the card is drawn to scale as it will print and follows every edit.
   Why now: Depends on the final card content from slice 6; makes the result visible on phones and in the demo without the print dialog.
   PRD ref: `prd.md > Features and Behavior > Previewing the card`
