@@ -1,0 +1,489 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Just These Buttons Spec</title>
+<meta name="description" content="Visual companion to devpost/spec.md. The Markdown file is canonical.">
+<style>
+  :root {
+    --paper: #F7F3EC; --card: #FFFDF8; --ink: #1E1B16; --muted: #6B6358; --line: #E3DBCF;
+    --accent: #C2410C; --accent-ink: #FFFFFF; --accent-soft: #FFE9DA; --code: #EFE9DF;
+    --browser: #E7EEF0; --server: #F1E9DA; --model: #FFE9DA;
+    --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+    --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --paper: #14120F; --card: #1D1A16; --ink: #F2EDE4; --muted: #A89F92; --line: #37312A;
+      --accent: #FF8A4C; --accent-ink: #1D1A16; --accent-soft: #3A2419; --code: #26221C;
+      --browser: #1C2528; --server: #28231B; --model: #3A2419;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --paper: #14120F; --card: #1D1A16; --ink: #F2EDE4; --muted: #A89F92; --line: #37312A;
+    --accent: #FF8A4C; --accent-ink: #1D1A16; --accent-soft: #3A2419; --code: #26221C;
+    --browser: #1C2528; --server: #28231B; --model: #3A2419;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font: 17px/1.6 var(--sans); }
+  main { max-width: 980px; margin: 0 auto; padding: 48px 16px 80px; }
+  .eyebrow { font-size: 13px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+  h1 { font: 600 clamp(34px, 6.5vw, 52px)/1.05 var(--serif); margin: 8px 0 16px; text-wrap: balance; }
+  h2 { font: 600 26px/1.2 var(--serif); margin: 0 0 16px; text-wrap: balance; }
+  h3 { font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin: 0 0 8px; }
+  p { margin: 0 0 12px; }
+  .lede { font-size: 20px; color: var(--muted); max-width: 44em; }
+  section { margin-top: 56px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 20px 24px; }
+  code, .mono { font-family: var(--mono); font-size: 14px; }
+  p code, li code, td code { background: var(--code); padding: 1px 6px; border-radius: 6px; }
+  pre { margin: 0; background: var(--code); border-radius: 12px; padding: 14px 16px; overflow-x: auto; font: 13.5px/1.55 var(--mono); }
+  .scroll { overflow-x: auto; }
+
+  /* Architecture */
+  .arch { width: 100%; height: auto; display: block; }
+  .arch .b { fill: var(--browser); stroke: var(--line); stroke-width: 1.5; }
+  .arch .s { fill: var(--server); stroke: var(--line); stroke-width: 1.5; }
+  .arch .m { fill: var(--model); stroke: var(--accent); stroke-width: 1.5; }
+  .arch .t { fill: var(--ink); font: 600 16px var(--sans); }
+  .arch .st { fill: var(--muted); font: 13px var(--sans); }
+  .arch .mono { fill: var(--muted); font: 12px var(--mono); }
+  .arch .lab { fill: var(--ink); font: 600 12.5px var(--sans); }
+  .arch .ar { stroke: var(--muted); stroke-width: 2; fill: none; }
+  .arch .ar.back { stroke: var(--accent); }
+  .arch .ah { fill: var(--muted); }
+  .arch .ahb { fill: var(--accent); }
+  .arch .key { fill: var(--accent); font: 700 11px var(--sans); letter-spacing: .06em; }
+  .arch .none { fill: var(--muted); font: italic 13px var(--serif); }
+  .arch-narrow { display: none; }
+  @media (max-width: 680px) { .arch-wide { display: none; } .arch-narrow { display: block; max-width: 380px; margin: 0 auto; } }
+  .pieces { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 16px; }
+  @media (max-width: 760px) { .pieces { grid-template-columns: 1fr; } }
+  .piece { border-radius: 14px; padding: 16px 18px; border: 1px solid var(--line); }
+  .piece.b { background: var(--browser); } .piece.s { background: var(--server); } .piece.m { background: var(--model); }
+  .piece b { display: block; margin-bottom: 4px; }
+  .piece p { font-size: 15.5px; margin: 0; }
+
+  /* Grid explainer */
+  .gridx { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 24px; align-items: center; }
+  @media (max-width: 760px) { .gridx { grid-template-columns: 1fr; } }
+  .gsvg { width: 100%; height: auto; display: block; max-width: 440px; }
+  .gsvg .photo { fill: var(--code); }
+  .gsvg .gl { stroke: var(--line); stroke-width: 1; }
+  .gsvg .gt { fill: var(--muted); font: 11px var(--mono); }
+  .gsvg .ctl { fill: var(--card); stroke: var(--muted); stroke-width: 1.5; }
+  .gsvg .box { fill: none; stroke: var(--accent); stroke-width: 3; }
+  .gsvg .guide { stroke: var(--accent); stroke-width: 1.2; stroke-dasharray: 4 4; }
+  .gsvg .gv { fill: var(--accent); font: 700 12px var(--mono); }
+  .gsvg .lb { fill: var(--ink); font: 700 12px var(--sans); }
+
+  /* Journey stepper */
+  .stepper-nav { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+  .stepper-nav button { font: 600 14px var(--sans); color: var(--ink); background: var(--card); border: 1px solid var(--line); border-radius: 999px; height: 40px; padding: 0 14px; cursor: pointer; }
+  .stepper-nav button[aria-current="step"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  .stepper-nav button:focus-visible, .pn button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+  .jstep { display: none; }
+  .jstep.on { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 24px; }
+  @media (max-width: 760px) { .jstep.on { grid-template-columns: 1fr; } }
+  .jstep h4 { font: 600 24px/1.25 var(--serif); margin: 0 0 6px; }
+  .where { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0 12px; }
+  .chip { font: 600 12px var(--sans); padding: 4px 10px; border-radius: 999px; border: 1px solid var(--line); }
+  .chip.b { background: var(--browser); } .chip.s { background: var(--server); } .chip.m { background: var(--model); }
+  .files { font: 13.5px/1.7 var(--mono); color: var(--muted); }
+  .files b { color: var(--ink); font-weight: 600; }
+  .prdref { font-size: 13px; color: var(--muted); }
+  .pn { display: flex; gap: 8px; margin-top: 16px; }
+  .pn button { font: 600 15px var(--sans); border-radius: 999px; padding: 10px 18px; cursor: pointer; border: 1px solid var(--line); background: var(--card); color: var(--ink); }
+  .pn button.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+  .pn button:disabled { opacity: .4; cursor: default; }
+
+  details { border: 1px solid var(--line); border-radius: 14px; background: var(--card); margin-bottom: 10px; }
+  details > summary { list-style: none; cursor: pointer; padding: 14px 20px; display: flex; align-items: center; gap: 12px; font-weight: 600; }
+  details > summary::-webkit-details-marker { display: none; }
+  details > summary::after { content: "+"; margin-left: auto; font-size: 22px; color: var(--muted); line-height: 1; }
+  details[open] > summary::after { content: "–"; }
+  details > summary:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; border-radius: 14px; }
+  details .body { padding: 0 20px 16px; }
+  details .body p { font-size: 15.5px; }
+  .sum-files { margin-left: 4px; font: 12.5px var(--mono); color: var(--muted); font-weight: 400; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 15.5px; }
+  th, td { text-align: left; padding: 11px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+  a { color: var(--accent); }
+  .pill { font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; padding: 3px 8px; border-radius: 999px; white-space: nowrap; }
+  .pill.l { background: var(--ink); color: var(--paper); }
+  .pill.r { background: var(--accent-soft); color: var(--accent); }
+  .pill.d { border: 1px solid var(--muted); color: var(--muted); }
+
+  .fail { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
+  .fail .card { border-left: 4px solid var(--accent); border-radius: 0 14px 14px 0; }
+  .fail b { display: block; margin-bottom: 4px; }
+  .fail p { font-size: 15px; color: var(--muted); margin: 0; }
+
+  .unknown { background: var(--accent-soft); border: 1px solid var(--accent); border-radius: 16px; padding: 20px 24px; }
+  .rule { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
+  @media (max-width: 640px) { .rule { grid-template-columns: 1fr; } }
+  .rule div { background: var(--card); border-radius: 12px; padding: 12px 14px; font-size: 15px; }
+  .rule b { display: block; }
+  footer.page { margin-top: 64px; font-size: 13px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 16px; }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <div class="eyebrow">Technical spec · approved</div>
+    <h1>Just These Buttons</h1>
+    <p class="lede">The blueprint for the PRD: a web page, one small server route that keeps the key secret, and Gemini 3.8 Flash reading the photo. No database, no login. The photo is never saved.</p>
+  </header>
+
+  <section aria-labelledby="how-h">
+    <h2 id="how-h">How this works, in plain language</h2>
+    <div class="card">
+      <svg class="arch arch-wide" viewBox="0 0 980 300" role="img" aria-labelledby="arch-t">
+        <title id="arch-t">The web page sends the photo and task to the server route. The route adds the secret key and asks Gemini. Gemini returns boxes and steps; the route checks them and sends them back to the page. Nothing is stored.</title>
+        <defs>
+          <marker id="a1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path class="ah" d="M0 0 L10 5 L0 10 z"/></marker>
+          <marker id="a2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path class="ahb" d="M0 0 L10 5 L0 10 z"/></marker>
+        </defs>
+        <rect class="b" x="10" y="40" width="270" height="190" rx="16"/>
+        <text class="t" x="30" y="74">The web page</text>
+        <text class="st" x="30" y="98">in the caregiver's browser</text>
+        <text class="mono" x="30" y="132">shrink photo · draw overlay</text>
+        <text class="mono" x="30" y="152">taps → edit steps</text>
+        <text class="mono" x="30" y="172">print layout</text>
+        <text class="none" x="30" y="208">memory only; refresh = start over</text>
+
+        <rect class="s" x="355" y="40" width="270" height="190" rx="16"/>
+        <text class="t" x="375" y="74">/api/find-buttons</text>
+        <text class="st" x="375" y="98">one small server route</text>
+        <text class="key" x="375" y="130">HOLDS THE API KEY</text>
+        <text class="mono" x="375" y="154">validate · rate limit</text>
+        <text class="mono" x="375" y="174">clamp boxes · max 5 steps</text>
+        <text class="none" x="375" y="208">logs status only, never the photo</text>
+
+        <rect class="m" x="700" y="40" width="270" height="190" rx="16"/>
+        <text class="t" x="720" y="74">Gemini 3.8 Flash</text>
+        <text class="st" x="720" y="98">Google's multimodal model</text>
+        <text class="mono" x="720" y="132">finds the controls</text>
+        <text class="mono" x="720" y="152">box_2d on a 0–1000 grid</text>
+        <text class="mono" x="720" y="172">+ label + instruction</text>
+        <text class="none" x="720" y="208">paid tier: not used for training</text>
+
+        <path class="ar" d="M280 112 H351" marker-end="url(#a1)"/>
+        <text class="lab" x="316" y="104" text-anchor="middle">photo</text>
+        <text class="lab" x="316" y="130" text-anchor="middle">+ task</text>
+        <path class="ar" d="M625 112 H696" marker-end="url(#a1)"/>
+        <text class="lab" x="660" y="104" text-anchor="middle">+ prompt</text>
+        <text class="lab" x="660" y="130" text-anchor="middle">+ schema</text>
+        <path class="ar back" d="M700 190 H629" marker-end="url(#a2)"/>
+        <text class="lab" x="664" y="212" text-anchor="middle">boxes</text>
+        <path class="ar back" d="M355 190 H284" marker-end="url(#a2)"/>
+        <text class="lab" x="320" y="212" text-anchor="middle">steps</text>
+        <text class="st" x="490" y="275" text-anchor="middle">Nothing is written to a database or disk anywhere in this loop.</text>
+      </svg>
+
+      <svg class="arch arch-narrow" viewBox="0 0 360 600" role="img" aria-labelledby="arch-tn">
+        <title id="arch-tn">Top to bottom: the web page sends photo and task to the server route, which holds the key and asks Gemini; boxes and steps come back up.</title>
+        <defs>
+          <marker id="a3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path class="ah" d="M0 0 L10 5 L0 10 z"/></marker>
+          <marker id="a4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path class="ahb" d="M0 0 L10 5 L0 10 z"/></marker>
+        </defs>
+        <rect class="b" x="20" y="10" width="320" height="130" rx="16"/>
+        <text class="t" x="40" y="44">The web page</text>
+        <text class="mono" x="40" y="72">shrink photo · draw overlay</text>
+        <text class="mono" x="40" y="92">taps → edit steps · print</text>
+        <text class="none" x="40" y="120">memory only</text>
+        <rect class="s" x="20" y="230" width="320" height="130" rx="16"/>
+        <text class="t" x="40" y="264">/api/find-buttons</text>
+        <text class="key" x="40" y="290">HOLDS THE API KEY</text>
+        <text class="mono" x="40" y="314">validate · rate limit · clamp</text>
+        <text class="none" x="40" y="340">never logs the photo</text>
+        <rect class="m" x="20" y="450" width="320" height="130" rx="16"/>
+        <text class="t" x="40" y="484">Gemini 3.8 Flash</text>
+        <text class="mono" x="40" y="512">box_2d on a 0–1000 grid</text>
+        <text class="mono" x="40" y="532">+ label + instruction</text>
+        <path class="ar" d="M120 140 V226" marker-end="url(#a3)"/><text class="lab" x="130" y="190">photo + task</text>
+        <path class="ar back" d="M240 226 V144" marker-end="url(#a4)"/><text class="lab" x="250" y="190">steps</text>
+        <path class="ar" d="M120 360 V446" marker-end="url(#a3)"/><text class="lab" x="130" y="410">+ prompt</text>
+        <path class="ar back" d="M240 446 V364" marker-end="url(#a4)"/><text class="lab" x="250" y="410">boxes</text>
+      </svg>
+
+      <div class="pieces">
+        <div class="piece b"><b>The web page</b><p>Takes the photo, shrinks it, shows each stage, draws the dimming and numbers, handles taps, lays out the printout.</p></div>
+        <div class="piece s"><b>The server route</b><p>Adds the secret key, asks Gemini, checks the answer is well-formed, sends back at most five steps.</p></div>
+        <div class="piece m"><b>Gemini 3.8 Flash</b><p>Looks at the photo and returns a box around each needed control, what's printed on it, and a plain instruction.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="grid-h">
+    <h2 id="grid-h">The 0–1000 grid</h2>
+    <div class="gridx">
+      <svg class="gsvg" viewBox="0 0 460 360" role="img" aria-labelledby="grid-t">
+        <title id="grid-t">A photo with a 0 to 1000 grid over it. The POWER button's box is top 412, left 88, bottom 520, right 160.</title>
+        <g transform="translate(40,20)">
+          <rect class="photo" x="0" y="0" width="400" height="300" rx="6"/>
+          <line class="gl" x1="100" y1="0" x2="100" y2="300"/><line class="gl" x1="200" y1="0" x2="200" y2="300"/><line class="gl" x1="300" y1="0" x2="300" y2="300"/>
+          <line class="gl" x1="0" y1="75" x2="400" y2="75"/><line class="gl" x1="0" y1="150" x2="400" y2="150"/><line class="gl" x1="0" y1="225" x2="400" y2="225"/>
+          <circle class="ctl" cx="49" cy="140" r="16"/><text class="lb" x="49" y="178" text-anchor="middle">POWER</text>
+          <circle class="ctl" cx="150" cy="140" r="34"/>
+          <rect class="ctl" x="230" y="110" width="60" height="22" rx="5"/><rect class="ctl" x="230" y="142" width="60" height="22" rx="5"/>
+          <circle class="ctl" cx="350" cy="140" r="18"/>
+          <rect class="box" x="35.2" y="123.6" width="28.8" height="32.4" rx="4"/>
+          <line class="guide" x1="35.2" y1="0" x2="35.2" y2="123.6"/>
+          <line class="guide" x1="64" y1="0" x2="64" y2="123.6"/>
+          <line class="guide" x1="0" y1="123.6" x2="35.2" y2="123.6"/>
+          <line class="guide" x1="0" y1="156" x2="35.2" y2="156"/>
+          <text class="gt" x="0" y="318">0</text><text class="gt" x="392" y="318" text-anchor="end">1000</text>
+          <text class="gt" x="-6" y="10" text-anchor="end">0</text><text class="gt" x="-6" y="300" text-anchor="end">1000</text>
+        </g>
+        <text class="gv" x="72" y="16" text-anchor="end">left 88</text>
+        <text class="gv" x="106" y="16">right 160</text>
+        <text class="gv" x="36" y="147" text-anchor="end">412</text>
+        <text class="gv" x="36" y="180" text-anchor="end">520</text>
+      </svg>
+      <div>
+        <p>Gemini describes where a control is with four numbers, on a grid that runs 0 to 1000 across and down the photo, whatever its real size:</p>
+        <pre>"box_2d": [412, 88, 520, 160]
+          top  left bottom right</pre>
+        <p style="margin-top:12px">The overlay draws in that same 0–1000 space and is stretched over the photo, so the model's numbers land on the photo with no conversion step to go wrong. A tap on the photo is turned into the same grid, which is how the app knows which button was tapped.</p>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="j-h">
+    <h2 id="j-h">The core journey through the system</h2>
+    <div class="stepper-nav" role="group" aria-label="Journey steps" id="dots"></div>
+
+    <div class="jstep" data-s="1">
+      <div>
+        <h4>1 · Open</h4>
+        <div class="where"><span class="chip b">web page</span></div>
+        <p>Next.js serves the page. The app starts in the <em>photo</em> stage: promise, <strong>Photograph the machine</strong>, <strong>Try a sample washing machine</strong>.</p>
+        <p class="prdref">prd.md › The Core Journey · Screens and Layout</p>
+      </div>
+      <div class="files"><b>app/page.tsx</b><br><b>components/JustTheseButtons.tsx</b> — reducer, stage order<br>components/PhotoStage.tsx</div>
+    </div>
+
+    <div class="jstep" data-s="2">
+      <div>
+        <h4>2 · Photo</h4>
+        <div class="where"><span class="chip b">web page</span></div>
+        <p>A file input with <code>capture="environment"</code> opens the phone's rear camera. The photo is turned the right way up, shrunk to 1600 px on the long edge and re-encoded as JPEG, all in the browser.</p>
+        <p class="prdref">prd.md › Features and Behavior › Taking the photo</p>
+      </div>
+      <div class="files"><b>lib/image.ts</b><br>createImageBitmap(file, { imageOrientation: "from-image" })<br>→ canvas → image/jpeg @ 0.85<br>→ { url, base64, width, height }</div>
+    </div>
+
+    <div class="jstep" data-s="3">
+      <div>
+        <h4>3 · Task</h4>
+        <div class="where"><span class="chip b">web page</span></div>
+        <p>The caregiver types the task (up to 120 characters). <strong>Find the buttons</strong> enables once there is a photo and some text.</p>
+        <p class="prdref">prd.md › Features and Behavior › Naming the task</p>
+      </div>
+      <div class="files"><b>components/TaskStage.tsx</b></div>
+    </div>
+
+    <div class="jstep" data-s="4">
+      <div>
+        <h4>4 · Working</h4>
+        <div class="where"><span class="chip b">web page</span><span class="chip s">server route</span><span class="chip m">Gemini</span></div>
+        <p>The page posts the photo and task. The route validates, checks the rate limit, and asks Gemini with the prompt and a JSON schema, with a 25-second timeout. Then it clamps boxes to the grid and keeps at most five steps.</p>
+        <p class="prdref">prd.md › Features and Behavior › Finding the buttons · States and Boundaries › Working</p>
+      </div>
+      <div>
+<pre>POST /api/find-buttons
+{
+  "image": "&lt;base64 JPEG&gt;",
+  "mimeType": "image/jpeg",
+  "task": "wash everyday clothes"
+}</pre>
+        <p class="files" style="margin-top:8px"><b>app/api/find-buttons/route.ts</b> · lib/gemini.ts · lib/prompt.ts · lib/schema.ts · lib/rate-limit.ts</p>
+      </div>
+    </div>
+
+    <div class="jstep" data-s="5">
+      <div>
+        <h4>5 · Result</h4>
+        <div class="where"><span class="chip s">server route</span><span class="chip b">web page</span></div>
+        <p>One SVG draws the photo twice: dimmed underneath, and the original on top seen only through holes at each step's box. Rings and numbers sit above. A low-confidence step gets a dashed ring and <strong>Check this one</strong>.</p>
+        <p class="prdref">prd.md › Features and Behavior › Finding the buttons</p>
+      </div>
+      <div>
+<pre>{ "status": "ok", "truncated": false,
+  "steps": [
+    { "id": "s1", "box": [412, 88, 520, 160],
+      "label": "POWER", "action": "press",
+      "instruction": "Press POWER.",
+      "needsCheck": false }, …
+] }</pre>
+        <p class="files" style="margin-top:8px"><b>components/ButtonOverlay.tsx</b> · components/StepList.tsx</p>
+      </div>
+    </div>
+
+    <div class="jstep" data-s="6">
+      <div>
+        <h4>6 · Check</h4>
+        <div class="where"><span class="chip b">web page</span></div>
+        <p>A tap becomes grid coordinates. Inside a step's box it removes that step; anywhere else it adds one there. Editing, reordering and clearing a flag all go through the same pure functions, so the photo and the list can't disagree. Numbers are just list positions.</p>
+        <p class="prdref">prd.md › Features and Behavior › Correcting the result</p>
+      </div>
+      <div class="files"><b>lib/steps.ts</b><br>hitTest · removeStep · addStepAt<br>moveStep · editInstruction · clearFlag<br><b>lib/steps.test.ts</b></div>
+    </div>
+
+    <div class="jstep" data-s="7">
+      <div>
+        <h4>7 · Print</h4>
+        <div class="where"><span class="chip b">web page</span></div>
+        <p><code>window.print()</code>. The print stylesheet hides the app and shows the print sheet: the same overlay drawn in black and white, the steps in 26 pt, and a sticker strip in 15 mm and 25 mm. It's laid out in millimetres to fit both A4 and Letter.</p>
+        <p class="prdref">prd.md › Features and Behavior › Printing the card and stickers</p>
+      </div>
+      <div class="files"><b>components/PrintSheet.tsx</b><br>app/globals.css — @media print, @page { margin: 12mm }<br>ButtonOverlay printMode</div>
+    </div>
+
+    <div class="pn">
+      <button type="button" id="prev">Back</button>
+      <button type="button" id="next" class="primary">Next step</button>
+    </div>
+  </section>
+
+  <section aria-labelledby="c-h">
+    <h2 id="c-h">Components</h2>
+    <details><summary>App shell and stages <span class="sum-files">JustTheseButtons.tsx</span></summary><div class="body"><p>Client component holding all state in one reducer; renders the stages in order. prd.md › The Core Journey · Screens and Layout</p></div></details>
+    <details><summary>Photo stage <span class="sum-files">PhotoStage.tsx · lib/image.ts</span></summary><div class="body"><p>Promise, photo button, sample link, privacy line, photo with Retake. Decode failure → “photo can't be used”. prd.md › Taking the photo</p></div></details>
+    <details><summary>Task stage <span class="sum-files">TaskStage.tsx</span></summary><div class="body"><p>Labelled field, 120 characters, Find the buttons disabled until photo + text. prd.md › Naming the task</p></div></details>
+    <details><summary>Find-buttons route <span class="sum-files">route.ts · gemini.ts</span></summary><div class="body"><p>Validate (zod) → 413 over 4 MB → rate limit (20 per 10 min per IP, daily cap) → Gemini with 25 s timeout → validate, clamp, sort, cap five, map low confidence to “check this one”. Logs status, count and duration only. prd.md › Finding the buttons · States and Boundaries</p></div></details>
+    <details><summary>Prompt <span class="sum-files">lib/prompt.ts</span></summary><div class="body"><p>Fewest controls for an elderly person, in order, two or three and never over five; box the physical control not its label; for a dial, name the setting printed on the machine; short plain wording that quotes the printed text; flag low confidence; say when the photo or task won't work.</p></div></details>
+    <details><summary>Button overlay <span class="sum-files">ButtonOverlay.tsx</span></summary><div class="body"><p>SVG in a 0–1000 viewBox over the photo's exact aspect ratio. Dimmed image, original through a mask of rounded boxes, rings and badges. <code>printMode</code> switches to black and white for the print sheet.</p></div></details>
+    <details><summary>Step list and editing <span class="sum-files">StepList.tsx · lib/steps.ts</span></summary><div class="body"><p>Editable instruction, move up/down, flag tag and “looks right”. Editing a flagged step clears its flag. A tapped-in step gets a default box about 7% of the photo's width, reading “Press this button”.</p></div></details>
+    <details><summary>Print sheet <span class="sum-files">PrintSheet.tsx</span></summary><div class="body"><p>Print-only. 186 × 250 mm content box. Card: task as title, overlay, numbered steps. Sticker strip below a dashed cut line.</p></div></details>
+    <details><summary>Sample machine <span class="sum-files">public/samples/washer.jpg</span></summary><div class="body"><p>For now a photorealistic washer image generated with Gemini, labelled “Sample · AI-generated photo”, through the same image path and the real route. The kernel is never faked. Swap in a real photo before recording.</p></div></details>
+    <details><summary>Status messages <span class="sum-files">StatusMessage.tsx</span></summary><div class="body"><p>The working line and the four error states with the exact PRD copy and their actions.</p></div></details>
+    <details><summary>Vision probe <span class="sum-files">scripts/probe.ts</span></summary><div class="body"><p>Developer tool: runs the same findButtons() over probe/cases.json and writes a contact sheet to judge by eye. Summary goes to docs/vision-probe.md.</p></div></details>
+  </section>
+
+  <section aria-labelledby="stack-h">
+    <h2 id="stack-h">Stack and services</h2>
+    <div class="card scroll">
+      <table>
+        <thead><tr><th>Piece</th><th>Choice</th><th>Why</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>Framework</td><td><a href="https://nextjs.org/docs">Next.js 16.3</a> + React 19 + TypeScript</td><td>Page and server route in one project; your usual stack</td><td><span class="pill l">Agreed</span></td></tr>
+          <tr><td>Styling</td><td><a href="https://tailwindcss.com/docs">Tailwind 4.3</a> with <code>print:</code></td><td>Print layout in the same system</td><td><span class="pill l">Agreed</span></td></tr>
+          <tr><td>AI</td><td><a href="https://ai.google.dev/gemini-api/docs/image-understanding"><code>gemini-3.8-flash</code></a> via <code>@google/genai</code> 2.24</td><td>Documented 0–1000 box output; you've used this call before</td><td><span class="pill l">Agreed</span></td></tr>
+          <tr><td>Validation</td><td><a href="https://zod.dev">zod 4</a></td><td>Never trust the model's JSON shape</td><td><span class="pill d">Detail</span></td></tr>
+          <tr><td>Tests</td><td><a href="https://vitest.dev">Vitest 5</a></td><td>Pure step logic and normalising</td><td><span class="pill d">Detail</span></td></tr>
+          <tr><td>Fonts</td><td>Atkinson Hyperlegible Next + Source Serif 4</td><td>Low-vision legibility; sturdy serif for titles</td><td><span class="pill d">Detail</span></td></tr>
+          <tr><td>Hosting</td><td>Local for the video; Vercel for a “Try it” link</td><td>Optional; never replaces the video</td><td><span class="pill l">Agreed</span></td></tr>
+          <tr><td>Key tier</td><td>Paid Gemini key</td><td>Free tier may use photos to improve products; about a cent per photo</td><td><span class="pill l">Agreed</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section aria-labelledby="fail-h">
+    <h2 id="fail-h">Where it will break, and what happens then</h2>
+    <div class="fail">
+      <div class="card"><b>Box on the wrong control</b><p>Most likely on remotes. The caregiver corrects it before printing, and low-confidence steps arrive flagged. The probe measures how often it happens.</p></div>
+      <div class="card"><b>Gemini slow or down</b><p>25 s timeout → “Something went wrong finding the buttons. Your photo is still here — try again.”</p></div>
+      <div class="card"><b>Photo won't decode</b><p>“Photo can't be used” message with Retake.</p></div>
+      <div class="card"><b>Printout spills over</b><p>Fixed-millimetre layout sized to the smaller of A4 and Letter; checked in print preview.</p></div>
+    </div>
+  </section>
+
+  <section aria-labelledby="u-h">
+    <h2 id="u-h">The useful unknown</h2>
+    <div class="unknown">
+      <p><strong>How far can the model's coordinates be trusted?</strong> This is your learning goal. The first build step runs the vision probe on at least 10 photos — washing machine, TV remote, air-conditioner remote, microwave, rice cooker — and records the hit rate in <code>docs/vision-probe.md</code>. They start as Gemini-generated photos (your choice); generated photos are cleaner than real ones, so real photos from home are added before the demo is recorded and reported separately.</p>
+      <div class="rule">
+        <div><b>≥ 8 of 10 correct</b>Every needed control is inside its ring → proceed as planned.</div>
+        <div><b>Fewer</b>Compare another model through <code>GEMINI_MODEL</code>, tighten the prompt, and lean harder on flagging and correction in the demo.</div>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="simp-h">
+    <h2 id="simp-h">What was simplified</h2>
+    <div class="card">
+      <table>
+        <thead><tr><th>Built</th><th>Instead of</th><th>Why</th></tr></thead>
+        <tbody>
+          <tr><td>In-memory state</td><td>Saved machines</td><td>Nothing in the kernel needs persistence</td></tr>
+          <tr><td>Browser print dialog</td><td>Server-made PDF</td><td>Same paper, no library; “Save as PDF” covers sharing</td></tr>
+          <tr><td>Two fixed sticker sizes</td><td>Patches cut to each button</td><td>Needs real-world scale from the photo</td></tr>
+          <tr><td>Tap adds a default-size box</td><td>Drawing a rectangle</td><td>Easier on a phone; the ring only has to say which button</td></tr>
+          <tr><td>In-memory rate limit</td><td>Shared quota store</td><td>Enough to protect a demo key</td></tr>
+          <tr><td>Light theme only</td><td>Dark mode</td><td>The page is meant to feel like paper</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section aria-labelledby="ft-h">
+    <h2 id="ft-h">File structure</h2>
+<pre>.
+├── app/
+│   ├── layout.tsx                 # fonts, metadata
+│   ├── page.tsx                   # renders &lt;JustTheseButtons/&gt;
+│   ├── globals.css                # Tailwind, tokens, print stylesheet
+│   └── api/find-buttons/route.ts  # validate → rate limit → Gemini → normalise
+├── components/
+│   ├── JustTheseButtons.tsx       # client; reducer; stage order
+│   ├── PhotoStage.tsx · TaskStage.tsx · StepList.tsx · StatusMessage.tsx
+│   ├── ButtonOverlay.tsx          # SVG dim + mask + rings + badges
+│   └── PrintSheet.tsx             # print-only card + sticker strip
+├── lib/
+│   ├── types.ts · image.ts · prompt.ts · gemini.ts · rate-limit.ts
+│   ├── steps.ts   + steps.test.ts # pure edit functions + hitTest
+│   └── schema.ts  + schema.test.ts
+├── public/samples/washer.jpg
+├── scripts/make-probe-photos.ts   # generates appliance photos with Gemini
+├── scripts/probe.ts               # vision probe → probe/report.html
+├── probe/                         # gitignored
+├── docs/ · devpost/ · private/ (gitignored)
+├── .env.example                   # GEMINI_API_KEY= GEMINI_MODEL= DAILY_LIMIT=
+└── README.md · LICENSE</pre>
+  </section>
+
+  <footer class="page">Visual companion to <code>devpost/spec.md</code>, which is canonical. Diagrams are drawn for planning, not taken from the running app.</footer>
+</main>
+
+<script>
+  (function () {
+    var total = 7, cur = 1;
+    var labels = ['Open', 'Photo', 'Task', 'Working', 'Result', 'Check', 'Print'];
+    var dots = document.getElementById('dots');
+    labels.forEach(function (l, i) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.textContent = (i + 1) + ' ' + l;
+      b.addEventListener('click', function () { go(i + 1); });
+      dots.appendChild(b);
+    });
+    var prev = document.getElementById('prev'), next = document.getElementById('next');
+    prev.addEventListener('click', function () { go(cur - 1); });
+    next.addEventListener('click', function () { go(cur + 1); });
+    function go(n) {
+      cur = Math.max(1, Math.min(total, n));
+      document.querySelectorAll('.jstep').forEach(function (el) {
+        el.classList.toggle('on', Number(el.dataset.s) === cur);
+      });
+      Array.prototype.forEach.call(dots.children, function (b, i) {
+        if (i + 1 === cur) b.setAttribute('aria-current', 'step'); else b.removeAttribute('aria-current');
+      });
+      prev.disabled = cur === 1;
+      next.disabled = cur === total;
+    }
+    var m = /^#step-(\d)$/.exec(location.hash);
+    go(m ? Number(m[1]) : 1);
+  })();
+</script>
+</body>
+</html>
