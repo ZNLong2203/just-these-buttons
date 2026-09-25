@@ -64,6 +64,22 @@ Examples:
 
 Four harder generated photos were added at the same time: a remote in an old hand in dim light, a washer shot at a steep angle with glare, an air fryer, and a portable radio. Across all 24 cases (generated and real), two runs gave 47 of 48 right. The one miss was a 25-second timeout while all 24 requests were sent at once. The app shows that as "try again".
 
+## Other languages
+
+The card's language is chosen apart from the machine's. Four cases use real Japanese appliances from Commons:
+
+- an air-conditioner remote, with an English card and then a Vietnamese one
+- a Hitachi remote
+- a top-loading Hitachi washer
+
+The model quoted every Japanese label as printed and gave its meaning in the card's language:
+
+> Press 「運転 入/切」 (On/Off). · Press 「冷房」 (Cooling). · Press 「▼」 to lower the temperature.
+> Nhấn nút 「冷房」 (Làm mát). · Nhấn nút 「▼」 để giảm nhiệt độ.
+> Press "切/入" (Power). · Press "スタート 一時停止" (Start/Pause).
+
+On the Japanese remotes, the Vietnamese and one English run started with 冷房 and did not press 運転入/切 first. On those remotes, pressing a mode button also switches the unit on, so this reads as a different valid route, not a miss. It is still a place where the family's check matters.
+
 ## Decision
 
 The plan's rule was to proceed if at least 8 of 10 photos get every needed control inside its ring. The generated photos (rounds 3 and 4) and the real photos both clear it. So the build keeps `gemini-3.8-flash` at `LOW` thinking with the round-4 prompt. The caregiver's check before printing stays: real homes are messier still, and one real case already came back flagged *check this one*.

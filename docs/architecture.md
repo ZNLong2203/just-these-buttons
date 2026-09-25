@@ -36,15 +36,15 @@ Three pieces, one request, no storage.
 3. `findButtons()` sends the photo and prompt. Gemini replies:
 
    ```json
-   { "photo_usable": true, "task_possible": true,
-     "steps": [{ "box_2d": [415, 68, 535, 170], "label": "power symbol", "action": "press",
-                 "instruction": "Press the power button.", "confidence": "high" }] }
+   { "photo_usable": true, "task_possible": true, "title": "Bật điều hòa",
+     "steps": [{ "box_2d": [140, 420, 205, 610], "label": "運転入/切", "label_meaning": "Bật/Tắt",
+                 "action": "press", "instruction": "Nhấn nút 「運転 入/切」 (Bật/Tắt).", "confidence": "high" }] }
    ```
 
 4. `normalise()` turns that into one of three results. On any error or timeout the route returns **502**.
 
    ```json
-   { "status": "ok", "steps": [{ "id", "box", "label", "action", "instruction", "needsCheck" }], "truncated": false }
+   { "status": "ok", "title": "…", "steps": [{ "id", "box", "label", "labelMeaning", "action", "instruction", "needsCheck" }], "truncated": false }
    { "status": "unusable_photo" }
    { "status": "task_not_possible" }
    ```

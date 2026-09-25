@@ -10,7 +10,8 @@ A web app for the grandchild or adult child who looks after an elderly grandpare
 
 - **The same photo with only the needed controls lit**, numbered in the order they are used, with one plain instruction each.
 - **A chance to fix it.** Tap a lit button to remove it, tap another to add it, rewrite or reorder any step. Steps the AI is unsure of are marked *Check this one*.
-- **One printed page**: a large-print step card to tape next to the machine, and number stickers to put on the real buttons.
+- **A card in the grandparent's language, whatever the machine says.** A second-hand Japanese remote can get a Vietnamese card. Each label is quoted exactly as printed, so it can be matched by eye, with its meaning beside it: *Nhấn nút 「冷房」 (Làm mát).*
+- **One printed page**, previewed on screen as you edit: a large-print step card to tape next to the machine, and number stickers to put on the real buttons.
 
 The grandparent never touches a phone or an app. The help lives on the machine they already own.
 
@@ -18,7 +19,9 @@ The grandparent never touches a phone or an app. The help lives on the machine t
 |---|---|
 | ![A printed A4 card titled "Wash everyday clothes": the washer panel washed out except the programme dial and the start button, two large numbered steps, and a strip of number stickers to cut out.](docs/images/card.png) | ![A microwave with two dials, dimmed except both dials, numbered 1 and 2: turn the top knob to the highest heat symbol, turn the bottom dial to 1.](docs/images/microwave.png) |
 
-*Sample photos: real appliances from Wikimedia Commons, CC BY-SA — see [photo credits](docs/photo-credits.md).*
+![A Japanese air-conditioner remote with 運転入/切, 冷房 and ▼ lit and numbered, beside a card written in Vietnamese: Nhấn nút 「運転 入/切」 (Bật/Tắt), Nhấn nút 「冷房」 (Làm mát), Nhấn nút 「▼」 để làm mát hơn.](docs/images/japanese-to-vietnamese.png)
+
+*A Japanese remote, a card in Vietnamese. Sample photos are real appliances from Wikimedia Commons, under CC licences — see [photo credits](docs/photo-credits.md).*
 
 ## Why
 
@@ -28,8 +31,9 @@ Caregivers already do this by hand. On the Alzheimer's Society forum they descri
 
 1. The browser turns the photo upright, shrinks it to 1600 px and sends it with the task to one server route.
 2. The route asks **Gemini 3.8 Flash** for the controls the task needs, in order. Each control comes back as a box on a 0–1000 grid over the photo, with its printed label and an instruction. The reply is validated, and the route never logs the photo or the task.
-3. The page draws the photo twice: dimmed underneath, and the original on top showing through a window at each box. Numbers are placed beside each button so they never hide a neighbouring key.
-4. Every edit goes through small pure functions, so the photo and the list can't disagree. Printing uses the browser's print dialog with a one-page layout sized in millimetres for A4 and Letter.
+3. The card is written in the language the family picks, independent of the machine's; labels stay as printed, with their meaning.
+4. The page draws the photo twice: dimmed underneath, and the original on top showing through a window at each box. Numbers are placed beside each button so they never hide a neighbouring key.
+5. Every edit goes through small pure functions, so the photo, the list and the on-screen card preview can't disagree. Printing uses the browser's print dialog with a one-page layout sized in millimetres for A4 and Letter.
 
 There is no database and no login, and nothing is kept between visits. More in [docs/architecture.md](docs/architecture.md). How far the model's boxes can be trusted, and the one sentence in the prompt that mattered most, is in [docs/vision-probe.md](docs/vision-probe.md).
 
@@ -43,7 +47,7 @@ cp .env.example .env.local        # then set GEMINI_API_KEY
 npm run dev                       # http://localhost:3000
 ```
 
-Tap one of the sample photos (**Washing machine**, **Microwave**, **TV remote**), then **Find the buttons**. To use a phone's camera, open `http://<your-computer's-IP>:3000` on a phone on the same Wi-Fi.
+Tap one of the sample photos (**Washing machine**, **Microwave**, **Japanese AC remote**, **TV remote**), pick the card's language, then **Find the buttons**. To use a phone's camera, open `http://<your-computer's-IP>:3000` on a phone on the same Wi-Fi.
 
 | Command | What it does |
 |---|---|
