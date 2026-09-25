@@ -2,7 +2,7 @@
 
 **Photograph a machine your grandparent struggles with, name one task, and print a card that shows only the buttons that task needs.**
 
-![The result screen: a washing machine photo with every control dimmed except the power button, the programme dial and START/PAUSE, numbered 1 to 3, with the steps listed beside it.](docs/images/result.png)
+![The result screen: a real washing machine panel with every control dimmed except the programme dial and the start button, numbered 1 and 2, with the steps listed beside it.](docs/images/result.png)
 
 A web app for the grandchild or adult child who looks after an elderly grandparent. The grandparent's health or memory is failing, and they keep getting stuck on the washing machine or the TV remote. The family member opens a link, takes a photo, types what the grandparent needs to do ("wash everyday clothes"), and gets back:
 
@@ -12,11 +12,11 @@ A web app for the grandchild or adult child who looks after an elderly grandpare
 
 The grandparent never touches a phone or an app. The help lives on the machine they already own.
 
-| The printed page | Small buttons on a remote |
+| The printed page | Dials, not buttons |
 |---|---|
-| ![A printed A4 card titled "Wash everyday clothes": the washer photo washed out except three ringed controls, three large numbered steps, and a strip of number stickers to cut out.](docs/images/card.png) | ![A TV remote on a sofa, dimmed except the red POWER button and the 1 key, numbered 1 and 2.](docs/images/remote.png) |
+| ![A printed A4 card titled "Wash everyday clothes": the washer panel washed out except the programme dial and the start button, two large numbered steps, and a strip of number stickers to cut out.](docs/images/card.png) | ![A microwave with two dials, dimmed except both dials, numbered 1 and 2: turn the top knob to the highest heat symbol, turn the bottom dial to 1.](docs/images/microwave.png) |
 
-*The washing machine and remote photos are AI-generated test images (see [Vision probe](docs/vision-probe.md)).*
+*Sample photos: real appliances from Wikimedia Commons, CC BY-SA — see [photo credits](docs/photo-credits.md).*
 
 ## Why
 
@@ -41,7 +41,7 @@ cp .env.example .env.local        # then set GEMINI_API_KEY
 npm run dev                       # http://localhost:3000
 ```
 
-Tap **Try a sample washing machine**, then **Find the buttons**. To use a phone's camera, open `http://<your-computer's-IP>:3000` on a phone on the same Wi-Fi.
+Tap one of the sample photos (**Washing machine**, **Microwave**, **TV remote**), then **Find the buttons**. To use a phone's camera, open `http://<your-computer's-IP>:3000` on a phone on the same Wi-Fi.
 
 | Command | What it does |
 |---|---|
@@ -71,4 +71,4 @@ Each file has an HTML companion next to it. Code was written with Claude Code.
 
 ## Licence
 
-[MIT](LICENSE)
+Code: [MIT](LICENSE). Sample photos keep their own Creative Commons licences ([photo credits](docs/photo-credits.md)).

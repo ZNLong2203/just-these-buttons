@@ -25,6 +25,9 @@ export function printRegion(rects: Rect[], W: number, H: number) {
   return { x, y, width, height };
 }
 
+const PRINT_HEIGHT_MM = 100;
+const PRINT_WIDTH_MM = 186;
+
 /** Same idea as the on-screen overlay, drawn for paper: one SVG, black ink, the rest washed out. */
 function PrintOverlay({ photo, steps }: { photo: Photo; steps: Step[] }) {
   const W = 1000;
@@ -37,9 +40,10 @@ function PrintOverlay({ photo, steps }: { photo: Photo; steps: Step[] }) {
     bottom: (Math.min(1000, y1 + pad) * H) / 1000,
   }));
   const view = printRegion(rects, W, H);
-  // Sizes follow the zoom, so badges and rings print at the same physical size.
-  const unit = view.width / 1000;
-  const badge = 64 * unit;
+  // The photo prints 100 mm tall, or 186 mm wide if it's very wide (see .print-photo).
+  // Sizing in millimetres keeps numbers and rings the same on paper for any photo shape.
+  const mm = 1 / Math.min(PRINT_HEIGHT_MM / view.height, PRINT_WIDTH_MM / view.width);
+  const badge = 9 * mm;
   const shifted = rects.map((r) => ({ left: r.left - view.x, top: r.top - view.y, right: r.right - view.x, bottom: r.bottom - view.y }));
   const spots = placeBadges(shifted, badge, view.width, view.height).map((p) => ({ x: p.x + view.x, y: p.y + view.y }));
 
@@ -62,7 +66,7 @@ function PrintOverlay({ photo, steps }: { photo: Photo; steps: Step[] }) {
         <mask id="print-keep">
           <rect width={W} height={H} fill="black" />
           {rects.map((r, i) => (
-            <rect key={i} x={r.left} y={r.top} width={r.right - r.left} height={r.bottom - r.top} rx={14 * unit} fill="white" />
+            <rect key={i} x={r.left} y={r.top} width={r.right - r.left} height={r.bottom - r.top} rx={1.5 * mm} fill="white" />
           ))}
         </mask>
       </defs>
@@ -75,19 +79,19 @@ function PrintOverlay({ photo, steps }: { photo: Photo; steps: Step[] }) {
           y={r.top}
           width={r.right - r.left}
           height={r.bottom - r.top}
-          rx={14 * unit}
+          rx={1.5 * mm}
           fill="none"
           stroke="#000"
-          strokeWidth={7 * unit}
+          strokeWidth={0.8 * mm}
         />
       ))}
       {spots.map((p, i) => {
         const end = nearestOnRect(p, rects[i]);
         return (
           <g key={`badge-${i}`}>
-            <line x1={p.x} y1={p.y} x2={end.x} y2={end.y} stroke="#000" strokeWidth={5 * unit} />
-            <circle cx={p.x} cy={p.y} r={badge / 2} fill="#000" stroke="#fff" strokeWidth={4 * unit} />
-            <text x={p.x} y={p.y} dy="0.36em" textAnchor="middle" fill="#fff" fontSize={38 * unit} fontWeight="700" fontFamily="var(--font-sans)">
+            <line x1={p.x} y1={p.y} x2={end.x} y2={end.y} stroke="#000" strokeWidth={0.6 * mm} />
+            <circle cx={p.x} cy={p.y} r={badge / 2} fill="#000" stroke="#fff" strokeWidth={0.5 * mm} />
+            <text x={p.x} y={p.y} dy="0.36em" textAnchor="middle" fill="#fff" fontSize={5.4 * mm} fontWeight="700" fontFamily="var(--font-sans)">
               {i + 1}
             </text>
           </g>
@@ -120,7 +124,10 @@ export default function PrintSheet({ photo, task, steps }: Props) {
             </li>
           ))}
         </ol>
-        <p className="print-credit">Made with Just These Buttons</p>
+        <p className="print-credit">
+          Made with Just These Buttons
+          {photo.credit && ` · Photo: ${photo.credit.author}, ${photo.credit.license}, via Wikimedia Commons`}
+        </p>
       </section>
 
       <section className="print-stickers">
