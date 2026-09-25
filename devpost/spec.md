@@ -108,6 +108,14 @@ PRD ref: `prd.md > Features and Behavior > Finding the buttons`, `prd.md > Featu
 `components/StepList.tsx` shows the steps in order. Each row has the number, an editable instruction, move up/down controls, a **Check this one** tag when flagged, and a way to mark a flagged step correct. `lib/steps.ts` holds the pure functions: `hitTest`, `removeStep`, `addStepAt` (default box about 7 % of the photo's width, centred on the tap, instruction "Press this button"), `moveStep`, `editInstruction` (which also clears the step's flag, as the PRD requires), `clearFlag`. Numbers are always the list position, never stored.
 PRD ref: `prd.md > Features and Behavior > Correcting the result`.
 
+### Card language
+`lib/languages.ts` lists the card languages (code, native name, English name). The request carries `language` (default `en`); `buildPrompt` tells the model to write the title and instructions in that language, quote each label exactly as printed, and give `label_meaning` when the label is in another language. The model also returns a short `title`. `TaskStage` holds the select; the chosen code goes on `<html lang>`-style `lang` attributes on the step list, preview and print sheet, so `:lang(vi)` switches Vietnamese text to Be Vietnam Pro (Atkinson Hyperlegible has no Vietnamese subset). CJK labels fall back to system fonts.
+PRD ref: `prd.md > Features and Behavior > Choosing the card's language`.
+
+### Card preview
+`components/CardSheet.tsx` is the card's markup, used twice: scaled on screen by `components/CardPreview.tsx` (its width measured, the 186 mm sheet scaled to fit), and full size by the print-only `PrintSheet`. Sheet styles apply on screen and paper; `@media print` only decides which copy shows. SVG ids come from `useId` so the two copies don't collide.
+PRD ref: `prd.md > Features and Behavior > Previewing the card`.
+
 ### Print sheet
 `components/PrintSheet.tsx` is always in the page but only visible under `@media print`, while the app is hidden. `@page { margin: 12mm }`. The content box is 186 × 250 mm, which fits both A4 and Letter.
 - **Card:** task as title (sentence case), the overlay in `printMode`, and numbered steps.
@@ -136,7 +144,8 @@ type Box = [ymin: number, xmin: number, ymax: number, xmax: number]; // 0–1000
 type Step = {
   id: string;            // stable key for React; not shown
   box: Box;
-  label: string;         // text printed on/near the control, e.g. "START"
+  label: string;         // text printed on/near the control, as printed, e.g. "START" or "運転入/切"
+  labelMeaning?: string; // the label's meaning in the card language, when it's in another language
   action: "press" | "turn";
   instruction: string;   // what prints on the card
   needsCheck: boolean;   // "Check this one"
@@ -150,6 +159,8 @@ type AppState = {
   stage: Stage;
   photo?: Photo;
   task: string;
+  language: string;      // card language code, default "en"
+  title: string;         // card title, from the model, editable
   steps: Step[];
   truncated: boolean;
   error?: { kind: "unusable_photo" | "task_not_possible" | "unreachable" | "rate_limited"; message: string };
@@ -224,8 +235,8 @@ type AppState = {
 - **Data use:** free tier content "used to improve our products"; paid tier "not used".
 
 ### The app's own route: `POST /api/find-buttons`
-- **Request:** `{ "image": "<base64 JPEG, no data: prefix>", "mimeType": "image/jpeg", "task": "wash everyday clothes" }`
-- **200, found:** `{ "status": "ok", "steps": [{ "id", "box", "label", "action", "instruction", "needsCheck" }], "truncated": false }`
+- **Request:** `{ "image": "<base64 JPEG, no data: prefix>", "mimeType": "image/jpeg", "task": "wash everyday clothes", "language": "en" }`
+- **200, found:** `{ "status": "ok", "title": "Wash everyday clothes", "steps": [{ "id", "box", "label", "labelMeaning", "action", "instruction", "needsCheck" }], "truncated": false }`
 - **200, photo unusable:** `{ "status": "unusable_photo" }`
 - **200, task not possible:** `{ "status": "task_not_possible" }`
 - **400** bad request · **413** image too large · **429** rate limited · **502** model failed or timed out. The page maps 502 and network errors to *AI can't be reached*.

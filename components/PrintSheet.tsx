@@ -3,7 +3,7 @@
 import { nearestOnRect, placeBadges, type Rect } from "@/lib/badges";
 import type { Photo, Step } from "@/lib/types";
 
-type Props = { photo: Photo; task: string; steps: Step[] };
+type Props = { photo: Photo; title: string; language: string; steps: Step[] };
 
 /**
  * The part of the photo worth printing: the kept buttons plus some context,
@@ -110,11 +110,11 @@ const sentenceCase = (s: string) => {
  * Only exists on paper. One page, laid out in millimetres to fit inside both
  * A4 and US Letter: the step card on top, a strip of number stickers below.
  */
-export default function PrintSheet({ photo, task, steps }: Props) {
+export default function PrintSheet({ photo, title, language, steps }: Props) {
   return (
-    <div className="print-sheet" aria-hidden="true">
+    <div className="print-sheet" aria-hidden="true" lang={language}>
       <section className="print-card">
-        <h2 className="print-title">{sentenceCase(task)}</h2>
+        <h2 className="print-title">{sentenceCase(title)}</h2>
         <PrintOverlay photo={photo} steps={steps} />
         <ol className="print-steps">
           {steps.map((s, i) => (

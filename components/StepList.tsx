@@ -5,6 +5,8 @@ import type { Step } from "@/lib/types";
 
 type Props = {
   steps: Step[];
+  /** The card's language, so text renders in the right face (see :lang(vi)). */
+  language: string;
   onEdit: (id: string, instruction: string) => void;
   onMove: (id: string, by: -1 | 1) => void;
   onRemove: (id: string) => void;
@@ -40,7 +42,7 @@ const Cross = () => (
   </svg>
 );
 
-export default function StepList({ steps, onEdit, onMove, onRemove, onConfirm, focusId }: Props) {
+export default function StepList({ steps, language, onEdit, onMove, onRemove, onConfirm, focusId }: Props) {
   const inputs = useRef(new Map<string, HTMLTextAreaElement>());
 
   useEffect(() => {
@@ -51,7 +53,7 @@ export default function StepList({ steps, onEdit, onMove, onRemove, onConfirm, f
   }, [focusId]);
 
   return (
-    <ol className="flex flex-col gap-3" aria-label="Steps">
+    <ol className="flex flex-col gap-3" aria-label="Steps" lang={language}>
       {steps.map((s, i) => (
         <li
           key={s.id}
@@ -91,7 +93,8 @@ export default function StepList({ steps, onEdit, onMove, onRemove, onConfirm, f
             <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-2 text-sm text-muted">
               {s.label && (
                 <span>
-                  {s.action === "turn" ? "Dial" : "Button"}: {s.label}
+                  {s.action === "turn" ? "Dial" : "Button"}: <span lang="und">{s.label}</span>
+                  {s.labelMeaning && <> · {s.labelMeaning}</>}
                 </span>
               )}
               {s.needsCheck && (

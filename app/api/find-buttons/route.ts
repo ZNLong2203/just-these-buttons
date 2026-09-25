@@ -41,6 +41,7 @@ export async function POST(request: Request) {
       imageBase64: parsed.data.image,
       mimeType: parsed.data.mimeType,
       task: parsed.data.task,
+      language: parsed.data.language,
     });
     // Status, count and timing only: never the photo, never the task.
     console.log(
@@ -48,6 +49,7 @@ export async function POST(request: Request) {
         route: "find-buttons",
         status: result.status,
         steps: result.status === "ok" ? result.steps.length : 0,
+        language: parsed.data.language,
         ms,
         model,
       }),

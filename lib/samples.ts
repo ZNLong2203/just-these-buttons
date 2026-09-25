@@ -46,6 +46,18 @@ export const SAMPLES: Sample[] = [
     },
   },
   {
+    id: "japanese-ac-remote",
+    label: "Japanese AC remote",
+    path: "/samples/japanese-ac-remote.jpg",
+    task: "turn on the air conditioner and make it cooler",
+    credit: {
+      author: "Nesnad",
+      license: "CC BY 4.0",
+      licenseUrl: "https://creativecommons.org/licenses/by/4.0/",
+      source: "https://commons.wikimedia.org/wiki/File:Air_conditioner_remote_-_Japan_-_2024_sept_8.jpeg",
+    },
+  },
+  {
     id: "tv-remote",
     label: "TV remote",
     path: "/samples/tv-remote.jpg",

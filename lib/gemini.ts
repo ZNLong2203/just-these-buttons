@@ -1,6 +1,7 @@
 // Server-side only: reads GEMINI_API_KEY. Imported by the API route and the
 // probe scripts, never by a client component.
 import { GoogleGenAI, PartMediaResolutionLevel, ThinkingLevel, createPartFromBase64 } from "@google/genai";
+import { languageName, type CardLanguage } from "./languages";
 import { buildPrompt } from "./prompt";
 import { ModelOutputSchema, jsonSchemaFor, normalise, type ModelOutput } from "./schema";
 import type { FindButtonsResult } from "./types";
@@ -24,6 +25,7 @@ export type FindButtonsInput = {
   imageBase64: string;
   mimeType: string;
   task: string;
+  language?: CardLanguage;
   model?: string;
 };
 
@@ -52,7 +54,7 @@ export async function findButtons(input: FindButtonsInput): Promise<FindButtonsO
             input.mimeType,
             PartMediaResolutionLevel.MEDIA_RESOLUTION_HIGH,
           ),
-          { text: buildPrompt(input.task) },
+          { text: buildPrompt(input.task, languageName(input.language ?? "en")) },
         ],
       },
     ],

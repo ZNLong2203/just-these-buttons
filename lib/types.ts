@@ -13,8 +13,10 @@ export type Step = {
   /** Stable key for rendering; never shown. */
   id: string;
   box: Box;
-  /** The text printed on or next to the control, e.g. "START". */
+  /** The text printed on or next to the control, exactly as printed, e.g. "START" or "運転入/切". */
   label: string;
+  /** The label's meaning in the card's language, when the label is in another language. */
+  labelMeaning?: string;
   action: StepAction;
   /** Exactly what prints on the card. */
   instruction: string;
@@ -23,7 +25,7 @@ export type Step = {
 };
 
 export type FindButtonsResult =
-  | { status: "ok"; steps: Step[]; truncated: boolean }
+  | { status: "ok"; title: string; steps: Step[]; truncated: boolean }
   | { status: "unusable_photo" }
   | { status: "task_not_possible" };
 

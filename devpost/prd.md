@@ -12,16 +12,17 @@ Source: `scope.md > The Unique Kernel`, `scope.md > Who It's For`.
 Develops `scope.md > The Core Loop` and `scope.md > What "Working" Looks Like`.
 
 1. The caregiver opens the link on a phone or laptop. They see the name, a one-line promise — *"Photograph a machine. Keep only the buttons they need."* — one large **Photograph the machine** button, and quieter buttons to try a real sample photo (washing machine, microwave, TV remote).
-2. They take or choose a photo. It appears on the page, and underneath it a single field asks **"What should they be able to do?"** (placeholder: *wash everyday clothes*).
+2. They take or choose a photo. It appears on the page, and underneath it a single field asks **"What should they be able to do?"** (placeholder: *wash everyday clothes*), with a **Card language** choice beside it (English by default).
 3. They tap **Find the buttons**. The photo stays in view while the app works, with a line saying what it is looking for.
 4. The same photo comes back with every control dimmed except the ones the task needs — usually two or three — each ringed and marked with a large number. Beneath the photo, a numbered list gives one short instruction per step, in order. Any step the AI is unsure of is marked **Check this one**.
 5. The caregiver fixes anything wrong: tap a highlighted button to remove it, tap anywhere else on the photo to add a step there, rewrite a step's wording, or move a step up or down. The photo and the list stay in sync.
-6. They tap **Print card & stickers** and get one printed page: the step card on top and a strip of number stickers below.
+6. A preview of the card sits under the steps and follows every edit. They tap **Print card & stickers** and get one printed page: the step card on top and a strip of number stickers below.
 7. They tape the card next to the real machine and put the number stickers on the real buttons. **Success is the grandparent doing the task from the card, without a phone.** **Start again with another machine** returns to step 1.
 
 ## Screens and Layout
 - **One page, three stages stacked in order** — Photo → Task → Result. Each stage appears once the previous one is done; nothing navigates away. On a phone, everything is one column. On a laptop, the result shows the photo on the left and the steps on the right.
-- **The printed page** is the only other surface: a print layout of the same result, not a separate screen.
+- **The card preview** sits in the result, below the steps: the printed page drawn to scale on screen.
+- **The printed page**: a print layout of the same result, not a separate screen.
 
 ## Look and Feel
 *Proposed by the agent at the learner's request; confirmed by the learner ("ổn đấy").*
@@ -70,6 +71,23 @@ Human check before anything is printed — from `scope.md > What "Working" Looks
   - [ ] Removing, adding and reordering all update the photo and the list together.
   - [ ] An edited instruction is exactly what appears on the printed card.
 
+### Choosing the card's language
+Added after the build — `scope.md > Added After the Build`.
+- A **Card language** choice sits beside the task field: English (default), Tiếng Việt, Español, Français, Deutsch, Português, 中文, 日本語, 한국어, हिन्दी.
+- The card's title and every instruction are written in that language, whatever language is printed on the machine.
+- Each instruction quotes the control's label **exactly as printed**, in its own script, so it can be matched by eye; when that label isn't in the card's language, its meaning follows in brackets — e.g. *Press 「運転入/切」 (On/Off).*
+- The title is editable, like the steps.
+- As a caregiver whose grandparent reads only Vietnamese, I want the card in Vietnamese even though the machine is labelled in Japanese, so that the grandparent can follow it and still find the right button by its shape.
+  - [ ] With the Japanese air-conditioner sample and English chosen, every step quotes the Japanese label and gives its English meaning.
+  - [ ] Switching to Tiếng Việt and finding again gives a Vietnamese title and Vietnamese steps that still quote the Japanese labels.
+  - [ ] Vietnamese text renders in one consistent font on screen and on paper.
+
+### Previewing the card
+Added after the build — `scope.md > Added After the Build`.
+- Under the steps, the card is drawn to scale exactly as it will print, and updates as steps are edited, removed, added or reordered.
+  - [ ] Editing a step's wording changes the preview immediately.
+  - [ ] The preview matches the printout.
+
 ### Printing the card and stickers
 From `scope.md > The POC Boundary` ("a print view").
 - **Print card & stickers** opens the browser's print dialog for a single page that fits A4 and US Letter.
@@ -99,7 +117,7 @@ From `scope.md > The POC Boundary` ("a sample photo so anyone can try it").
 *The learner asked the agent to propose best-practice defaults for layout, correction and printing; this section records those proposals and the learner's earlier choices. Items become learner decisions on approval.*
 - **Built for the family member, not the grandparent** — the grandparent only ever meets the paper. (Learner, scope.)
 - **Web, opened by link, no install** — the learner asked for a web version. (Learner.)
-- **English interface and card** — the learner chose English. (Learner.)
+- **English interface; card language chosen per card** — the learner chose English, then asked for the card's language to be independent of the machine's (Japanese machine, English card). (Learner.)
 - **Washing machine and TV remote first; phones cut** — the learner's grandmother struggles with all three, but phones are a different problem. (Learner, scope.)
 - **One page, stacked stages** — nothing to navigate, so a tired caregiver can't get lost. (Proposed.)
 - **The caregiver always checks before printing, and uncertain steps are flagged** — the AI will sometimes be wrong about a button, and a wrong card is worse than no card. (Proposed.)
@@ -112,12 +130,13 @@ From `scope.md > The POC Boundary` ("a sample photo so anyone can try it").
 - AI finding and ordering the needed controls on the photo, with dimming, numbered rings and plain-word steps.
 - Correcting: remove, add, edit, reorder, clear "check this one".
 - The one-page print layout: step card plus number-sticker strip.
-- The sample washing machine.
+- The sample photos.
+- Card language choice, with labels quoted as printed plus their meaning.
+- The on-screen card preview.
 - The states above.
 
 ## Deferred From the POC
 - **Cover patches cut to each unused button's real size** — needs the photo's real-world scale; plain numbered stickers prove the idea. (`scope.md > Later`)
-- **The card in the grandparent's own language** — valuable, but the English card proves the kernel. (`scope.md > Later`)
 - **Reading the steps aloud** — the card is the product; audio would need a device near the machine. (`scope.md > Later`)
 - **Saving the family's machines and sharing a PDF or link** — would need storage or accounts. (`scope.md > Later`)
 - **Several tasks per machine on one card** — one task per card keeps the card simple; a second task is a second card.

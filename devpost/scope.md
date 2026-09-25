@@ -34,12 +34,11 @@ The "oh, that's cool" beat: a machine with twenty-odd buttons becomes a machine 
 - AI locates and orders the needed buttons; the caregiver can correct them.
 - A print view: the step card and a sheet of numbered stickers.
 - A sample photo so anyone can try it without a machine to hand.
-- English interface and English card.
+- English interface. The card in a language the caregiver picks — which can differ from the language printed on the machine (added after the build at the learner's request; see below).
 - No accounts; nothing saved between visits.
 
 ## Later
 - Cover patches cut to each unused button's real size.
-- The card in the grandparent's own language (for example Vietnamese), even when the machine is labelled in English.
 - Reading the steps aloud.
 - A saved set of the family's machines, shared as a PDF or link with other relatives or a home helper.
 - Several tasks per machine.
@@ -49,3 +48,9 @@ The "oh, that's cool" beat: a machine with twenty-odd buttons becomes a machine 
 - **Live AR through the camera.** It would require the grandparent to hold and aim a phone, which is exactly what the kernel avoids.
 - **Accounts and login.** No part of the core loop needs them.
 - **A native mobile app.** The browser already opens the camera and prints; an install adds friction for a job done a few times.
+
+## Added After the Build
+The learner reviewed the finished proof of concept and pulled two items forward:
+- **The card's language is chosen separately from the machine's.** The learner's example: a machine labelled in Japanese, with the card in English. Many Vietnamese homes run second-hand Japanese appliances labelled only in Japanese, and the grandparent reads neither. The card keeps each label exactly as printed, so it can be matched by eye, and adds its meaning.
+- **A preview of the card on screen** before printing, so the result can be seen on a phone and in the demo without the print dialog.
+

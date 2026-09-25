@@ -10,6 +10,7 @@ import { existsSync } from "node:fs";
 import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { findButtons, DEFAULT_MODEL, type FindButtonsOutput } from "../lib/gemini";
+import type { CardLanguage } from "../lib/languages";
 
 const OUT = path.resolve("probe");
 
@@ -20,6 +21,7 @@ type ProbeCase = {
   expect: "ok" | "unusable_photo" | "task_not_possible";
   expectedControls: string[];
   source: "generated" | "real";
+  language?: CardLanguage;
 };
 
 type Row = { c: ProbeCase; out?: FindButtonsOutput; error?: string; labelsMatch?: boolean };
@@ -35,9 +37,16 @@ const mimeFor = (bytes: Buffer) => (bytes[0] === 0x89 && bytes[1] === 0x50 ? "im
 function labelsMatch(c: ProbeCase, out: FindButtonsOutput): boolean {
   if (out.result.status !== "ok") return false;
   const tokens = (s: string) => s.toUpperCase().match(/[A-Z0-9]+|\+/g) ?? [];
-  const said = out.result.steps.map((s) => new Set(tokens(`${s.label} ${s.instruction}`)));
+  const said = out.result.steps.map((s) => `${s.label} ${s.instruction}`);
+  // Latin labels match word by word in any order; others (Japanese) as a substring.
   const hit = (want: string, i: number) =>
-    want.split("|").some((alt) => tokens(alt).every((t) => said[i].has(t)));
+    want.split("|").some((alt) => {
+      const words = tokens(alt);
+      const have = new Set(tokens(said[i]));
+      return words.length > 0 && /^[\x00-\x7F]+$/.test(alt)
+        ? words.every((t) => have.has(t))
+        : said[i].toUpperCase().includes(alt.toUpperCase());
+    });
   let from = 0;
   for (const want of c.expectedControls) {
     const at = said.findIndex((_, i) => i >= from && hit(want, i));
@@ -94,7 +103,7 @@ function render(rows: Row[], model: string): string {
   <figure><img src="photos/${esc(r.c.photo)}" alt=""><svg viewBox="0 0 1000 1000" preserveAspectRatio="none">${overlay(r)}</svg></figure>
   <div class="meta">
     <h2>${esc(r.c.id)} <span class="v">${v === "check" ? "labels match — check boxes by eye" : v}</span></h2>
-    <p class="task">“${esc(r.c.task)}”</p>
+    <p class="task">“${esc(r.c.task)}”${r.c.language && r.c.language !== "en" ? ` <small>→ card in ${esc(r.c.language)}</small>` : ""}</p>
     <p><small>expected ${esc(r.c.expect)}${r.c.expectedControls.length ? `: ${esc(r.c.expectedControls.join(" → "))}` : ""} · got ${esc(statusOf(r))}${r.out ? ` · ${r.out.ms} ms` : ""} · ${r.c.source}</small></p>
     ${steps}
     ${r.error ? `<pre>${esc(r.error)}</pre>` : ""}
@@ -147,7 +156,7 @@ async function main() {
     cases.map(async (c): Promise<Row> => {
       try {
         const bytes = await readFile(path.join(OUT, "photos", c.photo));
-        const out = await findButtons({ imageBase64: bytes.toString("base64"), mimeType: mimeFor(bytes), task: c.task, model });
+        const out = await findButtons({ imageBase64: bytes.toString("base64"), mimeType: mimeFor(bytes), task: c.task, language: c.language, model });
         const row: Row = { c, out, labelsMatch: labelsMatch(c, out) };
         console.log(`  ${verdict(row).padEnd(5)} ${c.id} → ${out.result.status}${out.result.status === "ok" ? ` (${out.result.steps.map((s) => s.label).join(" → ")})` : ""} ${out.ms}ms`);
         return row;

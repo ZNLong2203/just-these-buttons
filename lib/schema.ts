@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { LANGUAGE_CODES } from "./languages";
 import type { Box, FindButtonsResult, Step } from "./types";
 
 export const MAX_STEPS = 5;
@@ -10,6 +11,7 @@ export const RequestSchema = z.object({
   image: z.string().min(1),
   mimeType: z.literal("image/jpeg"),
   task: z.string().trim().min(1).max(MAX_TASK_LENGTH),
+  language: z.enum(LANGUAGE_CODES).default("en"),
 });
 export type FindButtonsRequest = z.infer<typeof RequestSchema>;
 
@@ -24,6 +26,7 @@ export const ModelOutputSchema = z.object({
   task_possible: z
     .boolean()
     .describe("False if the task cannot be done with the controls visible in the photo."),
+  title: z.string().describe("A short title for the card, in the card's language, e.g. \"Wash everyday clothes\"."),
   steps: z
     .array(
       z.object({
@@ -34,11 +37,14 @@ export const ModelOutputSchema = z.object({
           .describe(
             "[ymin, xmin, ymax, xmax] of the physical control, normalized to 0-1000.",
           ),
-        label: z.string().describe("The text printed on or beside the control, as written."),
+        label: z.string().describe("The text printed on or beside the control, exactly as written, in its own script."),
+        label_meaning: z
+          .string()
+          .describe("The label's meaning in the card's language if the label is in a different language; otherwise empty."),
         action: z.enum(["press", "turn"]),
         instruction: z
           .string()
-          .describe("One short plain-English instruction for an elderly person."),
+          .describe("One short, plain instruction in the card's language for an elderly person, quoting the label as printed."),
         confidence: z
           .enum(["high", "low"])
           .describe("low if unsure this is the right control or the right position."),
@@ -82,10 +88,12 @@ export function normalise(
     const box = normaliseBox(raw.box_2d);
     const instruction = raw.instruction.trim();
     if (!box || !instruction) continue;
+    const meaning = raw.label_meaning.trim();
     steps.push({
       id: makeId(steps.length),
       box,
       label: raw.label.trim(),
+      ...(meaning && meaning.toLowerCase() !== raw.label.trim().toLowerCase() ? { labelMeaning: meaning } : {}),
       action: raw.action,
       instruction,
       needsCheck: raw.confidence === "low",
@@ -95,6 +103,7 @@ export function normalise(
   if (steps.length === 0) return { status: "task_not_possible" };
   return {
     status: "ok",
+    title: output.title.trim(),
     steps: steps.slice(0, MAX_STEPS),
     truncated: steps.length > MAX_STEPS,
   };

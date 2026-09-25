@@ -8,11 +8,11 @@ import StepList from "./StepList";
 import TaskStage from "./TaskStage";
 import { ErrorMessage, WorkingLine, type ErrorKind } from "./StatusMessage";
 import { loadSample, preparePhoto } from "@/lib/image";
+import type { CardLanguage } from "@/lib/languages";
 import type { Sample } from "@/lib/samples";
 import { MAX_STEPS } from "@/lib/schema";
 import { addStepAt, clearFlag, editInstruction, hitTest, moveStep, removeStep, type GridPoint } from "@/lib/steps";
 import type { FindButtonsResult, Photo, Step } from "@/lib/types";
-
 
 type Stage = "photo" | "task" | "working" | "result";
 
@@ -21,6 +21,10 @@ type State = {
   photo?: Photo;
   preparing: boolean;
   task: string;
+  /** The card's language; independent of the language printed on the machine. */
+  language: CardLanguage;
+  /** The card's title, from the model, editable. */
+  title: string;
   steps: Step[];
   truncated: boolean;
   error?: ErrorKind;
@@ -33,13 +37,15 @@ type Action =
   | { type: "photo"; photo: Photo; task?: string }
   | { type: "photoFailed" }
   | { type: "task"; task: string }
+  | { type: "language"; language: CardLanguage }
+  | { type: "title"; title: string }
   | { type: "find" }
   | { type: "found"; result: FindButtonsResult }
   | { type: "failed"; kind: ErrorKind }
   | { type: "steps"; steps: Step[]; addedId?: string }
   | { type: "startAgain" };
 
-const initial: State = { stage: "photo", preparing: false, task: "", steps: [], truncated: false };
+const initial: State = { stage: "photo", preparing: false, task: "", language: "en", title: "", steps: [], truncated: false };
 
 function reducer(state: State, action: Action): State {
   switch (action.type) {
@@ -61,16 +67,26 @@ function reducer(state: State, action: Action): State {
       return { ...state, preparing: false, error: "unusable_photo" };
     case "task":
       return { ...state, task: action.task };
+    case "language":
+      return { ...state, language: action.language };
+    case "title":
+      return { ...state, title: action.title };
     case "find":
       return { ...state, stage: "working", steps: [], truncated: false, error: undefined };
     case "found":
       if (action.result.status === "ok") {
-        return { ...state, stage: "result", steps: action.result.steps, truncated: action.result.truncated };
+        return {
+          ...state,
+          stage: "result",
+          title: action.result.title || state.task.trim(),
+          steps: action.result.steps,
+          truncated: action.result.truncated,
+        };
       }
       // "Task not possible" still opens the photo for tapping: the caregiver
       // may know the buttons even when the model doesn't.
       if (action.result.status === "task_not_possible") {
-        return { ...state, stage: "result", steps: [], truncated: false, error: "task_not_possible" };
+        return { ...state, stage: "result", title: state.task.trim(), steps: [], truncated: false, error: "task_not_possible" };
       }
       return { ...state, stage: "task", error: action.result.status };
     case "failed":
@@ -79,7 +95,8 @@ function reducer(state: State, action: Action): State {
       // Once they're placing buttons themselves, "couldn't find buttons" is old news.
       return { ...state, steps: action.steps, addedId: action.addedId, error: undefined };
     case "startAgain":
-      return initial;
+      // A new machine, but the same grandparent: keep the card language.
+      return { ...initial, language: state.language };
   }
 }
 
@@ -127,7 +144,12 @@ export default function JustTheseButtons() {
       const res = await fetch("/api/find-buttons", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ image: photo.base64, mimeType: photo.mimeType, task: state.task.trim() }),
+        body: JSON.stringify({
+          image: photo.base64,
+          mimeType: photo.mimeType,
+          task: state.task.trim(),
+          language: state.language,
+        }),
       });
       if (res.status === 429) return dispatch({ type: "failed", kind: "rate_limited" });
       if (res.status === 413) return dispatch({ type: "failed", kind: "unusable_photo" });
@@ -195,6 +217,8 @@ export default function JustTheseButtons() {
             <TaskStage
               task={state.task}
               onTaskChange={(task) => dispatch({ type: "task", task })}
+              language={state.language}
+              onLanguageChange={(language) => dispatch({ type: "language", language })}
               onFind={find}
               working={stage === "working"}
               primary={stage !== "result"}
@@ -227,6 +251,19 @@ export default function JustTheseButtons() {
             {stage === "result" && (
               <div className="flex flex-col gap-4">
                 <h2 className="text-sm font-bold tracking-[0.12em] text-muted uppercase">Just these buttons</h2>
+                <div>
+                  <label htmlFor="card-title" className="text-sm text-muted">
+                    Card title
+                  </label>
+                  <input
+                    id="card-title"
+                    lang={state.language}
+                    value={state.title}
+                    maxLength={60}
+                    onChange={(e) => dispatch({ type: "title", title: e.target.value })}
+                    className="w-full rounded-md border-b-2 border-line bg-transparent py-1 font-serif text-2xl font-semibold text-ink hover:border-ink/30 focus:border-accent focus-visible:outline-none"
+                  />
+                </div>
                 {state.truncated && (
                   <p className="rounded-2xl bg-ink/6 p-4 text-base">
                     This needed more than five steps, so the card shows the first five. A second card for the rest will be
@@ -236,6 +273,7 @@ export default function JustTheseButtons() {
                 {steps.length > 0 ? (
                   <StepList
                     steps={steps}
+                    language={state.language}
                     focusId={state.addedId}
                     onEdit={(id, text) => setSteps(editInstruction(steps, id, text))}
                     onMove={(id, by) => setSteps(moveStep(steps, id, by))}
@@ -271,7 +309,7 @@ export default function JustTheseButtons() {
       )}
     </main>
     {photo && stage === "result" && steps.length > 0 && (
-      <PrintSheet photo={photo} task={state.task} steps={steps} />
+      <PrintSheet photo={photo} title={state.title || state.task} language={state.language} steps={steps} />
     )}
     </>
   );

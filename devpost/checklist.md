@@ -61,6 +61,26 @@ Commit messages follow this repo's Conventional Commits hook (`scripts/hooks/com
   Learner check: Try a photo of something that isn't a machine, and a task the machine can't do (for example "make coffee" on the washer). Read the messages and say whether they'd make sense to a tired family member.
   Commit: `feat(states): answer every failure plainly and keep the caregiver's work`
 
+- [x] **6. The card speaks the grandparent's language, whatever the machine says**
+  Becomes usable: Pick a card language beside the task; the title and steps come back in it, each quoting the machine's label exactly as printed plus its meaning — a Japanese air-conditioner remote gives an English (or Vietnamese) card. The title is editable. A fourth sample, a real Japanese remote, shows it.
+  Why now: The learner's post-build request, and the sharpest version of the kernel for their own family: second-hand Japanese appliances are common in Vietnamese homes. It changes the model contract, so it comes before the preview that displays it.
+  PRD ref: `prd.md > Features and Behavior > Choosing the card's language`
+  Spec ref: `spec.md > Components > Card language`, `spec.md > Components > Prompt`, `spec.md > Data Model`, `spec.md > External Services and Dependencies`
+  Build: `lib/languages.ts`; `language` on the request and prompt; `title` and `label_meaning` in the model schema and `normalise()`; the select in `TaskStage`; editable title; label meaning in `StepList`; Be Vietnam Pro for `:lang(vi)`; the Japanese sample and Japanese probe cases.
+  Verify (mechanical): `npm test` covers the new fields in `normalise()` and the language in the prompt. Typecheck and build pass. The probe's Japanese cases return steps that quote Japanese labels with English meanings; a Vietnamese run returns Vietnamese steps. A headless run on the Japanese sample in English and in Tiếng Việt, screenshotted.
+  Learner check: Try the Japanese remote sample in English, then switch to Tiếng Việt and find again. Is the Vietnamese natural, and could your grandmother match 「運転入/切」 on the card to the button?
+  Commit: `feat(language): write the card in the grandparent's language`
+
+- [ ] **7. See the card before printing**
+  Becomes usable: Under the steps, the card is drawn to scale as it will print and follows every edit.
+  Why now: Depends on the final card content from slice 6; makes the result visible on phones and in the demo without the print dialog.
+  PRD ref: `prd.md > Features and Behavior > Previewing the card`
+  Spec ref: `spec.md > Components > Card preview`, `spec.md > Components > Print sheet`
+  Build: split the card markup into `CardSheet`; `CardPreview` scales it to its container; sheet styles shared by screen and print; unique SVG ids per copy.
+  Verify (mechanical): Typecheck and build pass. Headless: edit a step and see the preview change; print to PDF at A4 and Letter — still one page each, matching the preview.
+  Learner check: Edit a step and watch the preview change; print and compare.
+  Commit: `feat(preview): show the card to scale before printing`
+
 ## Hands-on Checkpoints
 
 - [x] Early usable behavior explored — after slice 2. The learner stepped away after slice 1 and asked the build to continue ("cái nào làm đc cứ tiếp"), so early feedback and the final review were combined in one session after slice 5.
@@ -93,4 +113,5 @@ Activity mode: pending (planned: focused alternative on the probe, since the lea
 - "Task not possible" opens the result with no steps and the photo tappable, instead of returning to the task field — the PRD's own copy tells the caregiver to "tap the buttons yourself", which the task stage couldn't offer. Placing a button clears the message. (`prd.md > States and Boundaries`)
 - Added a rate-limited message and `RATE_LIMIT` (per visitor per 10 minutes, default 20) alongside `DAILY_LIMIT`; the limit is counted before validation so malformed floods are limited too. (`spec.md > Components > Find-buttons route`)
 - Samples are three real, openly licensed photos from Wikimedia Commons (washing machine, microwave, TV remote), credited under the photo and on the printout, replacing the single generated washer — the learner asked for real web photos so the demo looks real. The probe gained a real-photo set (`npm run probe:real`, 8 photos, 9 cases) and four harder generated photos. (`prd.md > Features and Behavior > Sample machine`, `spec.md > Components > Sample machine`)
+- Slices 6 and 7 added after the final review at the learner's request: card language independent of the machine's language (their example: Japanese machine, English card) and an on-screen card preview. Scope, PRD and spec updated in the same pass. (`scope.md > Added After the Build`)
 

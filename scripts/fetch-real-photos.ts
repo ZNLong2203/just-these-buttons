@@ -21,6 +21,8 @@ type RealCase = {
   task: string;
   expect: "ok";
   expectedControls: string[];
+  /** Card language; defaults to English. */
+  language?: string;
 };
 
 const cases: RealCase[] = [
@@ -32,6 +34,10 @@ const cases: RealCase[] = [
   { id: "real-remote-hand", file: "TV remote control in hand 20170128.jpg", photo: "real-remote-hand.jpg", task: "turn on the TV and go to channel 1", expect: "ok", expectedControls: ["POWER|STANDBY|RED", "1"] },
   { id: "real-remote-louder", file: "Remote control for Hisense TV.jpg", photo: "real-remote-hisense.jpg", task: "turn on the TV and make it louder", expect: "ok", expectedControls: ["POWER|RED", "VOL|+"] },
   { id: "real-ac", file: "Remote control for Koppel air conditioner.jpg", photo: "real-ac.jpg", task: "turn on the air conditioner", expect: "ok", expectedControls: ["ON|OFF|POWER"] },
+  { id: "jp-ac-en", file: "Air conditioner remote - Japan - 2024 sept 8.jpeg", photo: "jp-ac-remote.jpg", task: "turn on the air conditioner and make it cooler", expect: "ok", expectedControls: ["運転", "冷房"], language: "en" },
+  { id: "jp-ac-vi", file: "Air conditioner remote - Japan - 2024 sept 8.jpeg", photo: "jp-ac-remote.jpg", task: "turn on the air conditioner and make it cooler", expect: "ok", expectedControls: ["運転", "冷房"], language: "vi" },
+  { id: "jp-remote-hitachi-en", file: "Hitachi aircon remote control in Japan 20140910.jpg", photo: "jp-ac-hitachi.jpg", task: "turn on the air conditioner to cool the room", expect: "ok", expectedControls: ["冷房"], language: "en" },
+  { id: "jp-washer-en", file: "Hitachi washing-maschine BW-D8HV 20110503.jpg", photo: "jp-washer-top.jpg", task: "start a normal wash", expect: "ok", expectedControls: ["スタート|電源|入"], language: "en" },
   { id: "real-microwave-dials", file: "BedieningspaneelProLineSM117.jpg", photo: "real-microwave-dials.jpg", task: "heat a bowl of soup for one minute", expect: "ok", expectedControls: ["POWER|LEVEL|DIAL|KNOB|TOP", "TIMER|1|MINUTE|DIAL|KNOB|BOTTOM"] },
 ];
 

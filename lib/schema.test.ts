@@ -6,6 +6,7 @@ type RawStep = ModelOutput["steps"][number];
 const step = (over: Partial<RawStep> = {}): RawStep => ({
   box_2d: [100, 100, 200, 200],
   label: "START",
+  label_meaning: "",
   action: "press",
   instruction: "Press START.",
   confidence: "high",
@@ -15,6 +16,7 @@ const step = (over: Partial<RawStep> = {}): RawStep => ({
 const output = (steps: RawStep[], over: Partial<ModelOutput> = {}): ModelOutput => ({
   photo_usable: true,
   task_possible: true,
+  title: "Wash everyday clothes",
   steps,
   ...over,
 });
@@ -70,5 +72,20 @@ describe("normalise", () => {
   it("skips a step whose box has no area without breaking numbering", () => {
     const r = normalise(output([step({ box_2d: [5, 5, 5, 5] }), step({ label: "START" })]));
     expect(r.status === "ok" && r.steps.map((s) => [s.id, s.label])).toEqual([["s1", "START"]]);
+  });
+
+  it("carries the card title", () => {
+    const r = normalise(output([step()], { title: "  Giặt quần áo hằng ngày " }));
+    expect(r.status === "ok" && r.title).toBe("Giặt quần áo hằng ngày");
+  });
+
+  it("keeps a label in its own script and adds its meaning when it differs", () => {
+    const r = normalise(output([step({ label: "運転入/切", label_meaning: "On/Off" })]));
+    expect(r.status === "ok" && r.steps[0]).toMatchObject({ label: "運転入/切", labelMeaning: "On/Off" });
+  });
+
+  it("drops a meaning that only repeats the label", () => {
+    const r = normalise(output([step({ label: "START", label_meaning: "Start" })]));
+    expect(r.status === "ok" && "labelMeaning" in r.steps[0]).toBe(false);
   });
 });
