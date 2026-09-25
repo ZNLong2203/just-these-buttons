@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Just These Buttons App Map</title>
+<style>
+  :root {
+    --paper: #F7F3EC; --card: #FFFDF8; --ink: #1E1B16; --muted: #6B6358; --line: #E3DBCF;
+    --accent: #C2410C; --accent-soft: #FFE9DA; --code: #EFE9DF;
+    --browser: #E7EEF0; --server: #F1E9DA; --model: #FFE9DA;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      color-scheme: dark;
+      --paper: #14120F; --card: #1D1A16; --ink: #F2EDE4; --muted: #A89F92; --line: #37312A;
+      --accent: #FF8A4C; --accent-soft: #3A2419; --code: #26221C;
+      --browser: #1C2528; --server: #28231B; --model: #3A2419;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font: 17px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif; }
+  main { max-width: 900px; margin: 0 auto; padding: 40px 16px 72px; }
+  .eyebrow { font-size: 13px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+  h1 { font: 600 clamp(32px, 6vw, 46px)/1.1 "Iowan Old Style", Palatino, Georgia, serif; margin: 6px 0 12px; }
+  h2 { font: 600 24px/1.25 "Iowan Old Style", Palatino, Georgia, serif; margin: 44px 0 12px; }
+  p { margin: 0 0 12px; }
+  .lede { color: var(--muted); font-size: 19px; }
+  code { font: 14px ui-monospace, "SF Mono", Menlo, Consolas, monospace; background: var(--code); padding: 1px 6px; border-radius: 6px; }
+  pre { margin: 8px 0 0; background: var(--code); border-radius: 10px; padding: 12px 14px; overflow-x: auto; font: 13.5px/1.5 ui-monospace, Menlo, monospace; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px; }
+  .pieces { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  @media (max-width: 720px) { .pieces { grid-template-columns: 1fr; } }
+  .piece { border-radius: 14px; padding: 14px 16px; border: 1px solid var(--line); }
+  .piece.b { background: var(--browser); } .piece.s { background: var(--server); } .piece.m { background: var(--model); }
+  .piece b { display: block; }
+  .piece p { font-size: 15px; margin: 4px 0 0; }
+  .flow { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; counter-reset: f; }
+  .flow li { display: grid; grid-template-columns: 34px 1fr; gap: 12px; align-items: start; background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 10px 14px; counter-increment: f; }
+  .flow li::before { content: counter(f); display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: var(--accent); color: #fff; font-weight: 700; font-size: 14px; }
+  .flow .where { display: block; font-size: 13px; color: var(--muted); }
+  .tag { font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; padding: 2px 8px; border-radius: 999px; margin-left: 6px; }
+  .tag.b { background: var(--browser); } .tag.s { background: var(--server); } .tag.m { background: var(--model); }
+  details { background: var(--card); border: 1px solid var(--line); border-radius: 14px; margin-bottom: 10px; }
+  summary { cursor: pointer; padding: 14px 18px; font-weight: 600; }
+  summary:focus-visible, a:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; border-radius: 6px; }
+  details .body { padding: 0 18px 16px; }
+  .note { font-size: 14px; color: var(--muted); }
+  table { width: 100%; border-collapse: collapse; font-size: 15.5px; }
+  th, td { text-align: left; padding: 10px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+  .scroll { overflow-x: auto; }
+  .practice { background: var(--accent-soft); border: 1px solid var(--accent); border-radius: 14px; padding: 18px 20px; }
+  footer { margin-top: 48px; font-size: 13px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 14px; }
+</style>
+</head>
+<body>
+<main>
+  <div class="eyebrow">App map · snapshot of commit 0972a37</div>
+  <h1>Just These Buttons</h1>
+  <p class="lede">A one-page web app: a family member photographs a machine, names one task, checks the buttons the AI kept, and prints a card and number stickers for the real machine.</p>
+
+  <h2>The three pieces</h2>
+  <div class="pieces">
+    <div class="piece b"><b>The page</b><p>Everything the caregiver sees and does, held in one reducer in memory. Nothing is saved.</p></div>
+    <div class="piece s"><b>One server route</b><p><code>/api/find-buttons</code> keeps the API key, limits requests, checks the reply.</p></div>
+    <div class="piece m"><b>Gemini 3.8 Flash</b><p>Returns each needed control as a box on a 0–1000 grid over the photo.</p></div>
+  </div>
+
+  <h2>One action, followed through the code</h2>
+  <p>What happens when the caregiver presses <strong>Find the buttons</strong>:</p>
+  <ol class="flow">
+    <li><span><strong>The page sends the photo and task</strong> <span class="tag b">page</span><span class="where"><code>components/JustTheseButtons.tsx</code> · <code>async function find()</code></span></span></li>
+    <li><span><strong>The route limits, validates, and asks the model</strong> <span class="tag s">server</span><span class="where"><code>app/api/find-buttons/route.ts</code> · <code>POST</code> → <code>lib/gemini.ts</code> · <code>findButtons</code></span></span></li>
+    <li><span><strong>The model reads the photo against the prompt</strong> <span class="tag m">Gemini</span><span class="where"><code>lib/prompt.ts</code> · <code>buildPrompt</code></span></span></li>
+    <li><span><strong>The reply is cleaned into at most five steps</strong> <span class="tag s">server</span><span class="where"><code>lib/schema.ts</code> · <code>normalise</code></span></span></li>
+    <li><span><strong>The photo dims except the kept buttons; numbers are placed beside them</strong> <span class="tag b">page</span><span class="where"><code>components/ButtonOverlay.tsx</code> · <code>mask</code> + <code>placeBadges</code> (<code>lib/badges.ts</code>)</span></span></li>
+  </ol>
+
+  <h2>A three-stop route <span class="note">(reference route: not yet walked through together)</span></h2>
+
+  <details>
+    <summary>1 · Where the request leaves the page — <code>components/JustTheseButtons.tsx</code></summary>
+    <div class="body">
+      <p>Search for <code>async function find()</code>. It posts the photo and the trimmed task, then turns each answer into one state: 429 into “wait a little”, 413 into “photo can't be used”, a network error into “try again”. Every path keeps the photo and task.</p>
+<pre>if (res.status === 429) return dispatch({ type: "failed", kind: "rate_limited" });
+if (res.status === 413) return dispatch({ type: "failed", kind: "unusable_photo" });
+if (!res.ok) throw new Error(`find-buttons ${res.status}`);
+dispatch({ type: "found", result: (await res.json()) as FindButtonsResult });</pre>
+    </div>
+  </details>
+
+  <details>
+    <summary>2 · What the model is told — <code>lib/prompt.ts</code></summary>
+    <div class="body">
+      <p>Search for <code>buildPrompt</code>. The line that mattered most came from the vision probe: without it, the model assumed the machine was already on and left out the power button.</p>
+<pre>Assume the machine starts switched off, with nothing set: the person is walking
+up to it cold. So if it has a power or on/off button, switching it on is the first step.</pre>
+      <p class="note">The call itself is <code>findButtons</code> in <code>lib/gemini.ts</code>: image sent at high resolution, JSON schema, <code>LOW</code> thinking, 25-second timeout.</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>3 · How the screen shows “just these buttons” — <code>components/ButtonOverlay.tsx</code></summary>
+    <div class="body">
+      <p>Search for <code>-keep</code>. The photo is drawn twice in one SVG: a dimmed copy, then the original shown only through a white rectangle per step in a mask. Because the SVG's <code>viewBox</code> is <code>0 0 1000 1000</code>, the model's box numbers are used exactly as returned.</p>
+<pre>&lt;mask id={`${id}-keep`}&gt;
+  &lt;rect width="1000" height="1000" fill="black" /&gt;
+  {steps.map((s) =&gt; &lt;rect … fill="white" /&gt;)}
+&lt;/mask&gt;</pre>
+      <p class="note">Numbers are placed by <code>placeBadges</code> in <code>lib/badges.ts</code> so they never cover a kept button or each other.</p>
+    </div>
+  </details>
+
+  <h2>To change this, start here</h2>
+  <div class="card scroll">
+    <table>
+      <thead><tr><th>To change…</th><th>Start at</th></tr></thead>
+      <tbody>
+        <tr><td>What the AI is told to look for</td><td><code>lib/prompt.ts</code> · <code>buildPrompt</code>, then re-run <code>npm run probe</code></td></tr>
+        <tr><td>The wording of an error</td><td><code>components/StatusMessage.tsx</code> · <code>ERROR_COPY</code></td></tr>
+        <tr><td>The most steps a card may hold</td><td><code>lib/schema.ts</code> · <code>MAX_STEPS</code></td></tr>
+        <tr><td>What a tap on the photo does</td><td><code>components/JustTheseButtons.tsx</code> · <code>onTap</code>; <code>lib/steps.ts</code> · <code>hitTest</code></td></tr>
+        <tr><td>The printed card's layout and sizes</td><td><code>app/globals.css</code> · <code>@media print</code>; <code>components/PrintSheet.tsx</code> · <code>printRegion</code></td></tr>
+        <tr><td>Colours and fonts</td><td><code>app/globals.css</code> · <code>:root</code>; <code>app/layout.tsx</code></td></tr>
+        <tr><td>Model, thinking level, limits</td><td><code>.env.local</code>: <code>GEMINI_MODEL</code>, <code>GEMINI_THINKING</code>, <code>RATE_LIMIT</code>, <code>DAILY_LIMIT</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>A practice to reuse</h2>
+  <div class="practice">
+    <p><strong>Probe the riskiest assumption before building the interface, using the same function the app will call.</strong></p>
+    <p>The whole product rested on the model putting boxes on the right controls. <code>scripts/probe.ts</code> ran the app's own <code>findButtons</code> over eleven photos and drew every box. It showed the boxes were fine and the <em>choice</em> of controls was not. Changing one sentence at a time, and running each version more than once, found the fix; raising the thinking level didn't help. The rounds and numbers are in <code>docs/vision-probe.md</code>.</p>
+    <p style="margin:0">On another project: when an AI output is the foundation, write a small script that runs the real call over a handful of realistic inputs and renders the result for eyes, then change one thing at a time and repeat each run.</p>
+  </div>
+
+  <h2>Run it again</h2>
+<pre>npm install
+cp .env.example .env.local   # set GEMINI_API_KEY
+npm run dev                  # http://localhost:3000
+npm test                     # 32 unit tests</pre>
+
+  <footer>A snapshot of the code at commit 0972a37. Paths and names will drift as the code changes; search for the named symbol if a line has moved. Planning documents: <code>devpost/scope.md</code>, <code>prd.md</code>, <code>spec.md</code>, <code>checklist.md</code>.</footer>
+</main>
+</body>
+</html>

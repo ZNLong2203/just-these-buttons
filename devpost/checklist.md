@@ -76,11 +76,11 @@ Commit messages follow this repo's Conventional Commits hook (`scripts/hooks/com
 - [ ] Optional edit and transfer reflection addressed — offered/declined/already covered/not applicable as appropriate
 - [ ] `devpost/app-map.html` generated from finished code, checked, and shown, including a project-grounded practice to reuse
 
-Activity and evidence:
-Route and stops:
-Edit outcome:
-Reflection:
-Activity mode:
+Activity and evidence: not yet done with the learner. Evidence prepared: the slice 1 vision probe (`docs/vision-probe.md`) answers the spec's useful unknown and the profile's learning goal; the learner has not reviewed it yet.
+Route and stops: `devpost/app-map.html` drafted at commit 0972a37 as a reference route (`JustTheseButtons.tsx › find` → `lib/prompt.ts › buildPrompt` → `ButtonOverlay.tsx › mask`); not walked through together. Refresh after final review if code changes.
+Edit outcome: not applicable yet.
+Reflection: not offered yet.
+Activity mode: pending (planned: focused alternative on the probe, since the learner is experienced and plan-first).
 
 ## Revisions
 
