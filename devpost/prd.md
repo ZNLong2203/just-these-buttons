@@ -11,7 +11,7 @@ Source: `scope.md > The Unique Kernel`, `scope.md > Who It's For`.
 ## The Core Journey
 Develops `scope.md > The Core Loop` and `scope.md > What "Working" Looks Like`.
 
-1. The caregiver opens the link on a phone or laptop. They see the name, a one-line promise — *"Photograph a machine. Keep only the buttons they need."* — one large **Photograph the machine** button, and a quieter **Try a sample washing machine** link.
+1. The caregiver opens the link on a phone or laptop. They see the name, a one-line promise — *"Photograph a machine. Keep only the buttons they need."* — one large **Photograph the machine** button, and quieter buttons to try a real sample photo (washing machine, microwave, TV remote).
 2. They take or choose a photo. It appears on the page, and underneath it a single field asks **"What should they be able to do?"** (placeholder: *wash everyday clothes*).
 3. They tap **Find the buttons**. The photo stays in view while the app works, with a line saying what it is looking for.
 4. The same photo comes back with every control dimmed except the ones the task needs — usually two or three — each ringed and marked with a large number. Beneath the photo, a numbered list gives one short instruction per step, in order. Any step the AI is unsure of is marked **Check this one**.
@@ -82,7 +82,7 @@ From `scope.md > The POC Boundary` ("a print view").
 
 ### Sample machine
 From `scope.md > The POC Boundary` ("a sample photo so anyone can try it").
-- **Try a sample washing machine** loads a real photo of a washing machine and fills the task with "wash everyday clothes", clearly labelled as a sample. It runs the same way as a real photo.
+- Three sample buttons — **Washing machine**, **Microwave**, **TV remote** — each load a real, openly licensed photo from Wikimedia Commons and fill in a matching task ("wash everyday clothes", "heat a bowl of soup for one minute", "turn on the TV"). The photographer and licence are shown under the photo and printed on the card. They run the same way as a real photo. *(Learner's request after the build: real web photos rather than generated ones, for a realistic demo.)*
   - [ ] One tap on the sample gets to a result without taking any photo.
 
 ## States and Boundaries

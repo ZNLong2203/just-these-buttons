@@ -1,3 +1,5 @@
+import type { Credit } from "./samples";
+
 /**
  * A control's position on the photo, as [top, left, bottom, right] on a
  * 0–1000 grid laid over the image. This is the format Gemini returns for
@@ -32,5 +34,6 @@ export type Photo = {
   mimeType: "image/jpeg";
   width: number;
   height: number;
-  isSample: boolean;
+  /** Set for the built-in sample photos, whose licence needs a visible credit. */
+  credit?: Credit;
 };

@@ -1,6 +1,7 @@
 // Browser-only: turns whatever the camera or file picker gave us into an
 // upright JPEG small enough to send quickly, and a URL to show on the page.
 
+import type { Credit } from "./samples";
 import type { Photo } from "./types";
 
 const MAX_EDGE = 1600;
@@ -15,7 +16,7 @@ function blobToBase64(blob: Blob): Promise<string> {
   });
 }
 
-export async function preparePhoto(file: Blob, isSample = false): Promise<Photo> {
+export async function preparePhoto(file: Blob, credit?: Credit): Promise<Photo> {
   // Phones store rotation as metadata; honour it so the boxes match what the
   // caregiver sees.
   const bitmap = await createImageBitmap(file, { imageOrientation: "from-image" });
@@ -40,12 +41,12 @@ export async function preparePhoto(file: Blob, isSample = false): Promise<Photo>
     mimeType: "image/jpeg",
     width,
     height,
-    isSample,
+    credit,
   };
 }
 
-export async function loadSample(path: string): Promise<Photo> {
+export async function loadSample(path: string, credit: Credit): Promise<Photo> {
   const res = await fetch(path);
   if (!res.ok) throw new Error(`Sample photo missing: ${res.status}`);
-  return preparePhoto(await res.blob(), true);
+  return preparePhoto(await res.blob(), credit);
 }

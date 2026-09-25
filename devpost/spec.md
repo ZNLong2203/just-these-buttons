@@ -17,7 +17,7 @@ There is no database and no login. The photo passes through the route to Gemini 
 ## The Core Journey Through the System
 PRD ref: `prd.md > The Core Journey`.
 
-1. **Open.** Next.js serves the page. The app starts in the *photo* stage: promise, **Photograph the machine**, **Try a sample washing machine**.
+1. **Open.** Next.js serves the page. The app starts in the *photo* stage: promise, **Photograph the machine**, and three sample buttons.
 2. **Photo.** The button is a file input with `accept="image/*"` and `capture="environment"`, so phones open the rear camera and laptops open a file picker. `lib/image.ts` decodes the file with the correct orientation, shrinks the long edge to 1600 px, re-encodes it as JPEG, and keeps both a display URL and the base64 bytes in memory. The *task* field appears.
 3. **Task.** The caregiver types the task. **Find the buttons** enables once there is a photo and non-blank task text.
 4. **Working.** The page `POST`s `{ image, mimeType, task }` to `/api/find-buttons`. The route validates the request, checks the rate limit, and calls Gemini with the photo, the prompt from `lib/prompt.ts` and a JSON schema. It validates the reply, clamps boxes to the grid, keeps at most five steps, and returns them. The page shows the *working* line with the photo still in view.
@@ -116,7 +116,7 @@ PRD ref: `prd.md > Features and Behavior > Correcting the result`.
 PRD ref: `prd.md > Features and Behavior > Printing the card and stickers`.
 
 ### Sample machine
-`public/samples/washer.jpg` is, for now, a photorealistic washing-machine image generated with a Gemini image model (the learner's choice until real photos are taken). **Try a sample washing machine** loads it through the same `lib/image.ts` path, fills the task with "wash everyday clothes", and shows a small "Sample · AI-generated photo" label. It calls the real route — the kernel is never faked. Swap in a real photo (ideally the grandmother's machine, with permission) before recording the demo.
+`lib/samples.ts` lists three real photos from Wikimedia Commons, resized into `public/samples/` (`washing-machine.jpg`, `microwave.jpg`, `tv-remote.jpg`), each with a task and its credit (author, licence, source). A sample loads through the same `lib/image.ts` path, carries its credit on the `Photo`, and calls the real route — the kernel is never faked. The credit is shown under the photo and printed on the card, as CC BY-SA requires. Credits: `docs/photo-credits.md`.
 PRD ref: `prd.md > Features and Behavior > Sample machine`.
 
 ### Status messages
@@ -142,7 +142,7 @@ type Step = {
   needsCheck: boolean;   // "Check this one"
 };
 
-type Photo = { url: string; base64: string; mimeType: "image/jpeg"; width: number; height: number; isSample: boolean };
+type Photo = { url: string; base64: string; mimeType: "image/jpeg"; width: number; height: number; credit?: Credit /* samples only */ };
 
 type Stage = "photo" | "task" | "working" | "result";
 
@@ -187,7 +187,7 @@ type AppState = {
 │   ├── prompt.ts                  # the instruction sent with the photo
 │   ├── gemini.ts                  # server-only SDK client + findButtons()
 │   └── rate-limit.ts
-├── public/samples/washer.jpg      # the sample machine
+├── public/samples/               # three real sample photos (CC BY-SA, credited)
 ├── scripts/
 │   ├── make-probe-photos.ts       # generates appliance photos with a Gemini image model
 │   └── probe.ts                   # vision probe → probe/report.html

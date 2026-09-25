@@ -8,12 +8,11 @@ import StepList from "./StepList";
 import TaskStage from "./TaskStage";
 import { ErrorMessage, WorkingLine, type ErrorKind } from "./StatusMessage";
 import { loadSample, preparePhoto } from "@/lib/image";
+import type { Sample } from "@/lib/samples";
 import { MAX_STEPS } from "@/lib/schema";
 import { addStepAt, clearFlag, editInstruction, hitTest, moveStep, removeStep, type GridPoint } from "@/lib/steps";
 import type { FindButtonsResult, Photo, Step } from "@/lib/types";
 
-const SAMPLE_PATH = "/samples/washer.jpg";
-const SAMPLE_TASK = "wash everyday clothes";
 
 type Stage = "photo" | "task" | "working" | "result";
 
@@ -113,7 +112,7 @@ export default function JustTheseButtons() {
   }
 
   const onFile = (file: File) => choosePhoto(() => preparePhoto(file));
-  const onSample = () => choosePhoto(() => loadSample(SAMPLE_PATH), SAMPLE_TASK);
+  const onSample = (sample: Sample) => choosePhoto(() => loadSample(sample.path, sample.credit), sample.task);
 
   function startAgain() {
     if (photo) URL.revokeObjectURL(photo.url);
@@ -176,8 +175,18 @@ export default function JustTheseButtons() {
               >
                 Retake
               </PhotoInput>
-              {photo.isSample && (
-                <span className="rounded-full bg-ink/8 px-3 py-1 text-sm text-muted">Sample · AI-generated photo</span>
+              {photo.credit && (
+                <p className="text-sm text-muted">
+                  Sample photo:{" "}
+                  <a href={photo.credit.source} target="_blank" rel="noreferrer" className="underline underline-offset-2 hover:text-ink">
+                    {photo.credit.author}
+                  </a>
+                  ,{" "}
+                  <a href={photo.credit.licenseUrl} target="_blank" rel="noreferrer" className="underline underline-offset-2 hover:text-ink">
+                    {photo.credit.license}
+                  </a>
+                  , via Wikimedia Commons
+                </p>
               )}
             </div>
           </section>

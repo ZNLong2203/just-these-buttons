@@ -265,7 +265,7 @@
       <div>
         <h4>1 · Open</h4>
         <div class="where"><span class="chip b">web page</span></div>
-        <p>Next.js serves the page. The app starts in the <em>photo</em> stage: promise, <strong>Photograph the machine</strong>, <strong>Try a sample washing machine</strong>.</p>
+        <p>Next.js serves the page. The app starts in the <em>photo</em> stage: promise, <strong>Photograph the machine</strong>, and three real sample photos.</p>
         <p class="prdref">prd.md › The Core Journey · Screens and Layout</p>
       </div>
       <div class="files"><b>app/page.tsx</b><br><b>components/JustTheseButtons.tsx</b> — reducer, stage order<br>components/PhotoStage.tsx</div>
@@ -364,7 +364,7 @@
     <details><summary>Button overlay <span class="sum-files">ButtonOverlay.tsx</span></summary><div class="body"><p>SVG in a 0–1000 viewBox over the photo's exact aspect ratio. Dimmed image, original through a mask of rounded boxes, rings and badges. <code>printMode</code> switches to black and white for the print sheet.</p></div></details>
     <details><summary>Step list and editing <span class="sum-files">StepList.tsx · lib/steps.ts</span></summary><div class="body"><p>Editable instruction, move up/down, flag tag and “looks right”. Editing a flagged step clears its flag. A tapped-in step gets a default box about 7% of the photo's width, reading “Press this button”.</p></div></details>
     <details><summary>Print sheet <span class="sum-files">PrintSheet.tsx</span></summary><div class="body"><p>Print-only. 186 × 250 mm content box. Card: task as title, overlay, numbered steps. Sticker strip below a dashed cut line.</p></div></details>
-    <details><summary>Sample machine <span class="sum-files">public/samples/washer.jpg</span></summary><div class="body"><p>For now a photorealistic washer image generated with Gemini, labelled “Sample · AI-generated photo”, through the same image path and the real route. The kernel is never faked. Swap in a real photo before recording.</p></div></details>
+    <details><summary>Sample machine <span class="sum-files">lib/samples.ts · public/samples/</span></summary><div class="body"><p>Three real, openly licensed photos from Wikimedia Commons — washing machine, microwave, TV remote — each with a task and its credit, shown under the photo and printed on the card. Same image path, real route; the kernel is never faked.</p></div></details>
     <details><summary>Status messages <span class="sum-files">StatusMessage.tsx</span></summary><div class="body"><p>The working line and the four error states with the exact PRD copy and their actions.</p></div></details>
     <details><summary>Vision probe <span class="sum-files">scripts/probe.ts</span></summary><div class="body"><p>Developer tool: runs the same findButtons() over probe/cases.json and writes a contact sheet to judge by eye. Summary goes to docs/vision-probe.md.</p></div></details>
   </section>
@@ -443,7 +443,7 @@
 │   ├── types.ts · image.ts · prompt.ts · gemini.ts · rate-limit.ts
 │   ├── steps.ts   + steps.test.ts # pure edit functions + hitTest
 │   └── schema.ts  + schema.test.ts
-├── public/samples/washer.jpg
+├── public/samples/                # three real sample photos (CC BY-SA, credited)
 ├── scripts/make-probe-photos.ts   # generates appliance photos with Gemini
 ├── scripts/probe.ts               # vision probe → probe/report.html
 ├── probe/                         # gitignored

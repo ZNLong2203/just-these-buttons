@@ -1,8 +1,10 @@
 "use client";
 
+import { SAMPLES, type Sample } from "@/lib/samples";
+
 type Props = {
   onFile: (file: File) => void;
-  onSample: () => void;
+  onSample: (sample: Sample) => void;
   busy: boolean;
 };
 
@@ -61,14 +63,22 @@ export default function PhotoStage({ onFile, onSample, busy }: Props) {
           <CameraIcon />
           Photograph the machine
         </PhotoInput>
-        <button
-          type="button"
-          onClick={onSample}
-          disabled={busy}
-          className="min-h-12 rounded-full px-4 text-lg font-semibold text-accent-strong underline decoration-2 underline-offset-4 hover:text-accent disabled:opacity-60"
-        >
-          Try a sample washing machine
-        </button>
+        <div className="flex flex-col items-center gap-3">
+          <p className="text-base text-muted">No machine to hand? Try a real photo:</p>
+          <div className="flex flex-wrap justify-center gap-2">
+            {SAMPLES.map((sample) => (
+              <button
+                key={sample.id}
+                type="button"
+                onClick={() => onSample(sample)}
+                disabled={busy}
+                className="min-h-12 rounded-full border-2 border-line bg-paper px-5 text-lg font-semibold text-ink hover:border-accent hover:text-accent-strong disabled:opacity-60"
+              >
+                {sample.label}
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
       <p className="mx-auto mt-10 max-w-sm text-sm text-muted">
         Your photo is sent to Google&rsquo;s Gemini to find the buttons. This app doesn&rsquo;t keep it.

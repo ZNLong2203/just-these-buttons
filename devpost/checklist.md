@@ -63,12 +63,12 @@ Commit messages follow this repo's Conventional Commits hook (`scripts/hooks/com
 
 ## Hands-on Checkpoints
 
-- [ ] Early usable behavior explored — after slice 2 (the kernel in the real interface), while look, feel and accuracy can still shape slices 3–5. The slice 1 probe report is also reviewed at its own learner check because it decides the prompt. *Pending: the learner stepped away after slice 1 and asked the build to continue ("cái nào làm đc cứ tiếp"); slices 1–2 learner checks are queued for their return and feed the final review.*
-- [ ] Final kick-the-tires exploration and feedback completed
+- [x] Early usable behavior explored — after slice 2. The learner stepped away after slice 1 and asked the build to continue ("cái nào làm đc cứ tiếp"), so early feedback and the final review were combined in one session after slice 5.
+- [x] Final kick-the-tires exploration and feedback completed — learner's verdict after reviewing the finished app: "wow oke trông ổn đấy" (looks good). No changes requested. They also accepted the print zoom revision and confirmed the Gemini key is on the paid tier, so the privacy line on the photo screen is accurate.
 
 ## Final Review
 
-- [ ] Final review complete — feedback resolved and learner confirms ready to ship
+- [x] Final review complete — no revisions requested; learner confirmed and moved on to deployment.
 
 ## Code Tour and App Map
 
@@ -92,4 +92,5 @@ Activity mode: pending (planned: focused alternative on the probe, since the lea
 - The print overlay is its own aspect-correct SVG inside `PrintSheet` rather than `ButtonOverlay` in a `printMode` — the screen overlay measures itself in the browser to place numbers, which can't happen for a sheet that is hidden until printing. (`spec.md > Components > Button overlay`)
 - "Task not possible" opens the result with no steps and the photo tappable, instead of returning to the task field — the PRD's own copy tells the caregiver to "tap the buttons yourself", which the task stage couldn't offer. Placing a button clears the message. (`prd.md > States and Boundaries`)
 - Added a rate-limited message and `RATE_LIMIT` (per visitor per 10 minutes, default 20) alongside `DAILY_LIMIT`; the limit is counted before validation so malformed floods are limited too. (`spec.md > Components > Find-buttons route`)
+- Samples are three real, openly licensed photos from Wikimedia Commons (washing machine, microwave, TV remote), credited under the photo and on the printout, replacing the single generated washer — the learner asked for real web photos so the demo looks real. The probe gained a real-photo set (`npm run probe:real`, 8 photos, 9 cases) and four harder generated photos. (`prd.md > Features and Behavior > Sample machine`, `spec.md > Components > Sample machine`)
 
