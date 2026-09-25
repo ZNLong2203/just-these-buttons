@@ -1,6 +1,6 @@
 "use client";
 
-export type ErrorKind = "unusable_photo" | "task_not_possible" | "unreachable";
+export type ErrorKind = "unusable_photo" | "task_not_possible" | "unreachable" | "rate_limited";
 
 /** The exact wording from prd.md > States and Boundaries. */
 export const ERROR_COPY: Record<ErrorKind, string> = {
@@ -8,6 +8,7 @@ export const ERROR_COPY: Record<ErrorKind, string> = {
   task_not_possible:
     "I couldn't find buttons for that on this machine. Try wording it differently, or tap the buttons yourself.",
   unreachable: "Something went wrong finding the buttons. Your photo is still here — try again.",
+  rate_limited: "A lot of photos have been checked in the last few minutes. Wait a little and try again — your photo is still here.",
 };
 
 export function WorkingLine({ task }: { task: string }) {

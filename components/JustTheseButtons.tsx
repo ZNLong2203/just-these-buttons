@@ -36,7 +36,7 @@ type Action =
   | { type: "task"; task: string }
   | { type: "find" }
   | { type: "found"; result: FindButtonsResult }
-  | { type: "failed" }
+  | { type: "failed"; kind: ErrorKind }
   | { type: "steps"; steps: Step[]; addedId?: string }
   | { type: "startAgain" };
 
@@ -68,11 +68,17 @@ function reducer(state: State, action: Action): State {
       if (action.result.status === "ok") {
         return { ...state, stage: "result", steps: action.result.steps, truncated: action.result.truncated };
       }
+      // "Task not possible" still opens the photo for tapping: the caregiver
+      // may know the buttons even when the model doesn't.
+      if (action.result.status === "task_not_possible") {
+        return { ...state, stage: "result", steps: [], truncated: false, error: "task_not_possible" };
+      }
       return { ...state, stage: "task", error: action.result.status };
     case "failed":
-      return { ...state, stage: "task", error: "unreachable" };
+      return { ...state, stage: "task", error: action.kind };
     case "steps":
-      return { ...state, steps: action.steps, addedId: action.addedId };
+      // Once they're placing buttons themselves, "couldn't find buttons" is old news.
+      return { ...state, steps: action.steps, addedId: action.addedId, error: undefined };
     case "startAgain":
       return initial;
   }
@@ -124,10 +130,12 @@ export default function JustTheseButtons() {
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ image: photo.base64, mimeType: photo.mimeType, task: state.task.trim() }),
       });
+      if (res.status === 429) return dispatch({ type: "failed", kind: "rate_limited" });
+      if (res.status === 413) return dispatch({ type: "failed", kind: "unusable_photo" });
       if (!res.ok) throw new Error(`find-buttons ${res.status}`);
       dispatch({ type: "found", result: (await res.json()) as FindButtonsResult });
     } catch {
-      dispatch({ type: "failed" });
+      dispatch({ type: "failed", kind: "unreachable" });
     }
   }
 
@@ -187,7 +195,15 @@ export default function JustTheseButtons() {
               <ErrorMessage
                 kind={state.error}
                 action={
-                  state.error === "unusable_photo" ? (
+                  state.error === "unreachable" ? (
+                    <button
+                      type="button"
+                      onClick={find}
+                      className="inline-flex min-h-12 items-center rounded-full bg-ink px-5 font-semibold text-paper"
+                    >
+                      Try again
+                    </button>
+                  ) : state.error === "unusable_photo" ? (
                     <PhotoInput
                       id="error-retake-input"
                       onFile={onFile}
@@ -202,6 +218,12 @@ export default function JustTheseButtons() {
             {stage === "result" && (
               <div className="flex flex-col gap-4">
                 <h2 className="text-sm font-bold tracking-[0.12em] text-muted uppercase">Just these buttons</h2>
+                {state.truncated && (
+                  <p className="rounded-2xl bg-ink/6 p-4 text-base">
+                    This needed more than five steps, so the card shows the first five. A second card for the rest will be
+                    easier to follow.
+                  </p>
+                )}
                 {steps.length > 0 ? (
                   <StepList
                     steps={steps}
@@ -221,7 +243,7 @@ export default function JustTheseButtons() {
                     type="button"
                     onClick={() => window.print()}
                     disabled={steps.length === 0}
-                    className="min-h-14 rounded-full bg-accent px-8 text-lg font-bold text-white transition-colors hover:bg-accent-strong disabled:cursor-not-allowed disabled:opacity-45"
+                    className="min-h-14 rounded-full bg-accent px-8 text-lg font-bold whitespace-nowrap text-white transition-colors hover:bg-accent-strong disabled:cursor-not-allowed disabled:opacity-45"
                   >
                     Print card &amp; stickers
                   </button>

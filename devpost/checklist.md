@@ -51,7 +51,7 @@ Commit messages follow this repo's Conventional Commits hook (`scripts/hooks/com
   Learner check: Get a result, edit one step, press **Print card & stickers**, and look at the print preview (or print it). Check that the card matches your edits, reads clearly from arm's length, and the stickers are a size you could put on a real button.
   Commit: `feat(print): print the step card and number stickers on one page`
 
-- [ ] **5. Every failure has a kind answer**
+- [x] **5. Every failure has a kind answer**
   Becomes usable: A blurry or non-machine photo, an impossible task, more than five steps, a slow or unreachable model, an oversized image and too many requests each give the plain message and recovery action from the PRD. The photo and task are never lost.
   Why now: These states only make sense once the whole journey exists. They are what a judge or real caregiver hits first when trying their own photo.
   PRD ref: `prd.md > States and Boundaries`
@@ -90,4 +90,6 @@ Activity mode:
 - Step numbers are placed beside their button by `lib/badges.ts`, with a leader line, instead of at each box's top-left corner — on the TV remote the corner badges covered the small neighbouring buttons they were meant to point at. Rings stay on the 0–1000 grid; numbers are placed in pixels because they have a fixed on-screen size. (`spec.md > Components > Button overlay`)
 - The printed photo zooms to the kept buttons (never below 55% of the photo's width, same proportions), instead of printing the whole photo — on the TV-remote card the needed keys printed a few millimetres wide. This is a visible change to the card; flagged for the learner's review. (`prd.md > Features and Behavior > Printing the card and stickers`, `spec.md > Components > Print sheet`)
 - The print overlay is its own aspect-correct SVG inside `PrintSheet` rather than `ButtonOverlay` in a `printMode` — the screen overlay measures itself in the browser to place numbers, which can't happen for a sheet that is hidden until printing. (`spec.md > Components > Button overlay`)
+- "Task not possible" opens the result with no steps and the photo tappable, instead of returning to the task field — the PRD's own copy tells the caregiver to "tap the buttons yourself", which the task stage couldn't offer. Placing a button clears the message. (`prd.md > States and Boundaries`)
+- Added a rate-limited message and `RATE_LIMIT` (per visitor per 10 minutes, default 20) alongside `DAILY_LIMIT`; the limit is counted before validation so malformed floods are limited too. (`spec.md > Components > Find-buttons route`)
 
