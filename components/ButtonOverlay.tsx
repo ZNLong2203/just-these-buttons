@@ -2,12 +2,15 @@
 
 import { useId, useLayoutEffect, useRef, useState } from "react";
 import { nearestOnRect, placeBadges, type Rect } from "@/lib/badges";
+import type { GridPoint } from "@/lib/steps";
 import type { Box, Photo, Step } from "@/lib/types";
 
 type Props = {
   photo: Pick<Photo, "url" | "width" | "height">;
   steps: Step[];
   working?: boolean;
+  /** When set, taps on the photo are reported as grid points. */
+  onTap?: (p: GridPoint) => void;
 };
 
 /** Grow a box a little so the lit window shows the whole control, not a crop of it. */
@@ -39,7 +42,7 @@ function useSize<T extends HTMLElement>() {
  * top seen only through a window at each step's box. Rings and numbers are
  * HTML on top, so they stay round whatever the photo's shape.
  */
-export default function ButtonOverlay({ photo, steps, working = false }: Props) {
+export default function ButtonOverlay({ photo, steps, working = false, onTap }: Props) {
   const id = useId().replace(/[^a-zA-Z0-9_-]/g, "");
   const lit = steps.length > 0;
   const [frame, { width, height }] = useSize<HTMLDivElement>();
@@ -55,8 +58,18 @@ export default function ButtonOverlay({ photo, steps, working = false }: Props) 
   return (
     <div
       ref={frame}
-      className="relative w-full overflow-hidden rounded-2xl bg-ink/5 shadow-[0_1px_0_var(--line),0_12px_32px_-18px_rgb(30_27_22/0.45)]"
+      className={`relative w-full touch-manipulation overflow-hidden rounded-2xl bg-ink/5 shadow-[0_1px_0_var(--line),0_12px_32px_-18px_rgb(30_27_22/0.45)] select-none ${
+        onTap ? "cursor-crosshair" : ""
+      }`}
       style={{ aspectRatio: `${photo.width} / ${photo.height}` }}
+      onClick={
+        onTap
+          ? (e) => {
+              const r = e.currentTarget.getBoundingClientRect();
+              onTap({ x: ((e.clientX - r.left) / r.width) * 1000, y: ((e.clientY - r.top) / r.height) * 1000 });
+            }
+          : undefined
+      }
     >
       <svg
         viewBox="0 0 1000 1000"

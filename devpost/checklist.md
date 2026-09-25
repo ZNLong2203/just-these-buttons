@@ -31,7 +31,7 @@ Commit messages follow this repo's Conventional Commits hook (`scripts/hooks/com
   Learner check: Run `npm run dev`, open `http://localhost:3000`, tap **Try a sample washing machine**, then **Find the buttons**. Then try one photo of your own on your phone (same Wi-Fi, laptop's IP address). Say what you notice about how it looks and feels and whether the lit buttons are the right ones.
   Commit: `feat(app): photograph a machine and see just these buttons`
 
-- [ ] **3. Fix what the AI got wrong**
+- [x] **3. Fix what the AI got wrong**
   Becomes usable: On the result, tapping a lit button removes it and renumbers. Tapping anywhere else adds a step there. Step text can be rewritten, steps can be moved up or down, and a **Check this one** step can be confirmed or edited to clear its flag. The photo and list always agree.
   Why now: The human check is what makes a printed card trustworthy. It needs the working overlay from slice 2, and printing needs its final, corrected steps.
   PRD ref: `prd.md > Features and Behavior > Correcting the result`, `prd.md > The Core Journey` (step 5)

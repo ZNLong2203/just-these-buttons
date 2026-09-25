@@ -7,6 +7,8 @@ import StepList from "./StepList";
 import TaskStage from "./TaskStage";
 import { ErrorMessage, WorkingLine, type ErrorKind } from "./StatusMessage";
 import { loadSample, preparePhoto } from "@/lib/image";
+import { MAX_STEPS } from "@/lib/schema";
+import { addStepAt, clearFlag, editInstruction, hitTest, moveStep, removeStep, type GridPoint } from "@/lib/steps";
 import type { FindButtonsResult, Photo, Step } from "@/lib/types";
 
 const SAMPLE_PATH = "/samples/washer.jpg";
@@ -22,6 +24,8 @@ type State = {
   steps: Step[];
   truncated: boolean;
   error?: ErrorKind;
+  /** The step just added by a tap, so its wording can be typed over. */
+  addedId?: string;
 };
 
 type Action =
@@ -31,7 +35,8 @@ type Action =
   | { type: "task"; task: string }
   | { type: "find" }
   | { type: "found"; result: FindButtonsResult }
-  | { type: "failed" };
+  | { type: "failed" }
+  | { type: "steps"; steps: Step[]; addedId?: string };
 
 const initial: State = { stage: "photo", preparing: false, task: "", steps: [], truncated: false };
 
@@ -64,12 +69,27 @@ function reducer(state: State, action: Action): State {
       return { ...state, stage: "task", error: action.result.status };
     case "failed":
       return { ...state, stage: "task", error: "unreachable" };
+    case "steps":
+      return { ...state, steps: action.steps, addedId: action.addedId };
   }
 }
 
+let added = 0;
+
 export default function JustTheseButtons() {
   const [state, dispatch] = useReducer(reducer, initial);
-  const { photo, stage } = state;
+  const { photo, stage, steps } = state;
+  const setSteps = (next: Step[], addedId?: string) => dispatch({ type: "steps", steps: next, addedId });
+
+  // Tap a lit button to drop it; tap anywhere else to add a step there.
+  function onTap(p: GridPoint) {
+    if (!photo) return;
+    const hit = hitTest(steps, p);
+    if (hit >= 0) return setSteps(removeStep(steps, steps[hit].id));
+    const id = `added-${++added}`;
+    const next = addStepAt(steps, p, id, photo.width / photo.height);
+    if (next !== steps) setSteps(next, id);
+  }
 
   async function choosePhoto(load: () => Promise<Photo>, task?: string) {
     dispatch({ type: "preparing" });
@@ -116,7 +136,19 @@ export default function JustTheseButtons() {
       ) : (
         <div className="grid gap-8 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)] lg:items-start lg:gap-10">
           <section aria-label="The machine" className="flex flex-col gap-3">
-            <ButtonOverlay photo={photo} steps={state.steps} working={stage === "working"} />
+            <ButtonOverlay
+              photo={photo}
+              steps={steps}
+              working={stage === "working"}
+              onTap={stage === "result" ? onTap : undefined}
+            />
+            {stage === "result" && (
+              <p className="text-base text-muted">
+                {steps.length >= MAX_STEPS
+                  ? "Five steps is the most a card holds. Tap a lit button to remove it."
+                  : "Wrong button? Tap a lit one to remove it, or tap the right one to add it."}
+              </p>
+            )}
             <div className="flex flex-wrap items-center justify-between gap-3">
               <PhotoInput
                 id="retake-input"
@@ -159,7 +191,20 @@ export default function JustTheseButtons() {
             {stage === "result" && (
               <div className="flex flex-col gap-4">
                 <h2 className="text-sm font-bold tracking-[0.12em] text-muted uppercase">Just these buttons</h2>
-                <StepList steps={state.steps} />
+                {steps.length > 0 ? (
+                  <StepList
+                    steps={steps}
+                    focusId={state.addedId}
+                    onEdit={(id, text) => setSteps(editInstruction(steps, id, text))}
+                    onMove={(id, by) => setSteps(moveStep(steps, id, by))}
+                    onRemove={(id) => setSteps(removeStep(steps, id))}
+                    onConfirm={(id) => setSteps(clearFlag(steps, id))}
+                  />
+                ) : (
+                  <p className="rounded-2xl border-2 border-dashed border-line p-4 text-lg text-muted">
+                    No buttons kept. Tap the buttons they need on the photo, in order.
+                  </p>
+                )}
               </div>
             )}
           </section>

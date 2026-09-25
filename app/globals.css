@@ -47,9 +47,12 @@ h3 {
   text-wrap: balance;
 }
 
-:focus-visible {
-  outline: 3px solid var(--accent);
-  outline-offset: 3px;
+/* In the base layer so a component's own focus style (a utility) can replace it. */
+@layer base {
+  :focus-visible {
+    outline: 3px solid var(--accent);
+    outline-offset: 3px;
+  }
 }
 
 /* A slow band of light moving down the photo while the model works. */
