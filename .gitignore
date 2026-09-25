@@ -1,0 +1,24 @@
+# ─────────────────────────────────────────────────────────────
+#  Private — never pushed. The repo goes public; these do not.
+# ─────────────────────────────────────────────────────────────
+/private/
+*.private.md
+
+# Personal learning context written by the Devpost Learn skill pack
+/devpost/learner-profile.md
+
+# ─── Secrets ─────────────────────────────────────────────────
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# ─── Skill pack ──────────────────────────────────────────────
+# Duplicate copy the installer makes for the Eve agent; the real
+# skills live in .agents/skills and are committed.
+/agent/
+
+# ─── OS / editor ─────────────────────────────────────────────
+.DS_Store
+.idea/
