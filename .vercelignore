@@ -1,0 +1,12 @@
+# Never upload private work, test photos, local secrets or agent tooling.
+/private
+/probe
+/.env
+/.env.*
+!/.env.example
+/devpost/learner-profile.md
+/.agents
+/agent
+/.claude
+/node_modules
+/.next

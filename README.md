@@ -2,6 +2,8 @@
 
 **Photograph a machine your grandparent struggles with, name one task, and print a card that shows only the buttons that task needs.**
 
+**Try it:** [just-these-buttons.vercel.app](https://just-these-buttons.vercel.app) (tap a sample photo, or use your phone's camera)
+
 ![The result screen: a real washing machine panel with every control dimmed except the programme dial and the start button, numbered 1 and 2, with the steps listed beside it.](docs/images/result.png)
 
 A web app for the grandchild or adult child who looks after an elderly grandparent. The grandparent's health or memory is failing, and they keep getting stuck on the washing machine or the TV remote. The family member opens a link, takes a photo, types what the grandparent needs to do ("wash everyday clothes"), and gets back:

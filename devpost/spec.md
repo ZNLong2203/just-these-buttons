@@ -46,7 +46,7 @@ PRD ref: `prd.md > The Core Journey`.
 - **Start:** `npm install`, then `npm run dev`, then open `http://localhost:3000`.
 - **Tests:** `npm test` runs the unit tests. `npm run probe` runs the vision probe (see **Vision Probe**).
 - **For the demo video:** record the laptop browser for the flow, and a phone for the real-machine shots (photographing the washing machine, taping the card up).
-- **Optional deployment — agreed by the learner:** Vercel, with `GEMINI_API_KEY` set in project settings, so the Devpost page can carry a "Try it" link. It is never a substitute for the video. The key is on the paid tier (agreed), which stops Google using the photos to improve its products and costs about a cent per photo. The free tier's terms allow that use and would contradict the page's privacy line.
+- **Optional deployment — agreed by the learner, live at https://just-these-buttons.vercel.app:** Vercel, with `GEMINI_API_KEY` set in project settings, so the Devpost page can carry a "Try it" link. It is never a substitute for the video. The key is on the paid tier (agreed), which stops Google using the photos to improve its products and costs about a cent per photo. The free tier's terms allow that use and would contradict the page's privacy line.
 
 ## Look and Feel
 Carries forward `prd.md > Look and Feel` (confirmed by the learner).
