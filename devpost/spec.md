@@ -38,7 +38,7 @@ PRD ref: `prd.md > The Core Journey`.
 
 **Unverified — check in the first build step:**
 - Google's current docs show a newer `client.interactions.create` call in their examples. `generateContent` is expected to still work in SDK 2.24, but confirm it before building on it.
-- Confirm the exact thinking setting for 3.8 Flash. The docs recommend minimal thinking for detection; the learner's earlier project used `thinkingLevel: "MINIMAL"`.
+- Confirm the exact thinking setting for 3.8 Flash. The docs recommend minimal thinking for detection; the learner's earlier project used `thinkingLevel: "MINIMAL"`. *Checked in slice 1: `generateContent` works; 3.8 Flash rejects `MINIMAL`, so the app uses `LOW` (see `docs/vision-probe.md`).*
 
 ## Where It Runs and How Someone Tries It
 - **Runtime:** Node.js 22 (installed: 22.18) and any modern browser. A phone on the same Wi-Fi can open the laptop's dev server by IP to test the camera path.
@@ -84,6 +84,8 @@ PRD ref: `prd.md > Features and Behavior > Finding the buttons`, `prd.md > State
 ### Prompt
 `lib/prompt.ts` builds one instruction from the task. It tells the model:
 - the photo shows a household machine, and an elderly person must do the task using as few controls as possible;
+- the machine starts switched off with nothing set, so a power button comes first (added after the probe showed the model otherwise assumes the machine is on);
+- one step per control, with repeats written as "twice", and always one setting rather than a choice;
 - return only the controls needed, in the order used — normally two or three, never more than five;
 - the box must tightly cover the physical control, not its printed label;
 - for a dial, the step says which setting to turn it to, reading the words printed on the machine;
@@ -203,7 +205,7 @@ type AppState = {
 ## External Services and Dependencies
 
 ### Gemini API
-- **Call:** `ai.models.generateContent({ model, contents, config })`. `contents` is one user turn with two parts: `{ inlineData: { mimeType: "image/jpeg", data: <base64> } }` and `{ text: <prompt> }`. The config sets `responseMimeType: "application/json"`, sets `responseJsonSchema` to the model output schema below, and sets thinking to minimal.
+- **Call:** `ai.models.generateContent({ model, contents, config })`. `contents` is one user turn with two parts: `{ inlineData: { mimeType: "image/jpeg", data: <base64> } }` and `{ text: <prompt> }`. The config sets `responseMimeType: "application/json"`, sets `responseJsonSchema` to the model output schema below, and sets thinking to `LOW` (3.8 Flash's lowest; overridable with `GEMINI_THINKING`). The image part is sent at `MEDIA_RESOLUTION_HIGH`.
 - **Model output schema:**
   ```json
   {
