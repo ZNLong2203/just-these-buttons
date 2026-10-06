@@ -1,8 +1,9 @@
-# ─────────────────────────────────────────────────────────────
-#  Private — never pushed. The repo goes public; these do not.
-# ─────────────────────────────────────────────────────────────
+# ─── Local notes and tooling ─────────────────────────────────
 /private/
 *.private.md
+/AGENTS.md
+/CLAUDE.md
+/.vercelignore
 
 # Personal learning context written by the Devpost Learn skill pack
 /devpost/learner-profile.md

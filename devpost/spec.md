@@ -205,8 +205,7 @@ type AppState = {
 ├── probe/                         # gitignored: probe photos, cases.json, report
 ├── docs/                          # public technical docs (architecture, vision-probe results)
 ├── devpost/                       # Devpost learning workspace (scope, prd, spec, checklist)
-├── private/                       # gitignored: strategy and drafts
-├── scripts/hooks/                 # commit-msg + pre-commit guards
+├── private/                       # gitignored: local notes
 ├── .env.example                   # GEMINI_API_KEY=, GEMINI_MODEL=, DAILY_LIMIT=
 ├── next.config.ts · tsconfig.json · vitest.config.ts · package.json
 ├── README.md

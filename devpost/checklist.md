@@ -7,7 +7,7 @@ status: approved
 
 Build mode: fast (learner: "oke ổn triển đi"; can switch to learn mode at any time)
 
-Commit messages follow this repo's Conventional Commits hook (`scripts/hooks/commit-msg`), the learner's standing convention for every project.
+Commit messages follow Conventional Commits, the learner's standing convention for every project.
 
 ## Slices
 
